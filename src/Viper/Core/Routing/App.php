@@ -23,7 +23,7 @@ use Viper\Support\Writer;
 
 // TODO add data to be added to all views
 
-// TODO add logs (esp.for background tasks)
+// TODO logs not logging errors =(
 
 
 abstract class App {
