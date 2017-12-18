@@ -3,8 +3,8 @@
 namespace Viper\Core;
 
 use Viper\Core\Routing\HttpException;
+use Viper\Template\TemplateError;
 use Viper\Template\Viper;
-use Viper\Template\ViperError;
 
 
 class View extends Viper implements Viewable {
@@ -81,7 +81,7 @@ class View extends Viper implements Viewable {
 
                 } else throw $e;
 
-            } catch (ViperError $err) {
+            } catch (TemplateError $err) {
 
                 throw $e;
 

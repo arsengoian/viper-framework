@@ -23,7 +23,7 @@ abstract class Interpreter extends Preprocessor {
 	}
 
 	public function runtimeError(string $err) {
-		throw new ViperRuntimeError($err, $this -> file, $this -> line, $this -> position);
+		throw new RuntimeError($err, $this -> file, $this -> line, $this -> position);
 	}
 
 
