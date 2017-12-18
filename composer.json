@@ -21,6 +21,6 @@
     "smottt/wideimage": "1.1.3"
   },
   "suggest": {
-    "pimax/fb-messenger-php": "(~1.0)"
+    "pimax/fb-messenger-php": "Useful for FB bots creation(~1.0)"
   }
 }
