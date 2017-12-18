@@ -1,11 +1,10 @@
 <?php
 
-	namespace Viper\Core;
-	
-	interface Viewable {
-	
-		public function flush(): string;
-	
-	}
+namespace Viper\Core;
 
-?>
+interface Viewable {
+
+	public function flush(): string;
+
+}
+

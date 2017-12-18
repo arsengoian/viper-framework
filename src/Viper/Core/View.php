@@ -6,7 +6,6 @@ use Viper\Core\Routing\HttpException;
 use Viper\Template\Viper;
 use Viper\Template\ViperError;
 
-// TODO move to View namespace
 
 class View extends Viper implements Viewable {
 

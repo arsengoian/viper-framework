@@ -16,7 +16,6 @@ class E
 {
     public function __construct ($message = "", $code = 0, Throwable $previous = null)
     {
-
         die();
     }
 }

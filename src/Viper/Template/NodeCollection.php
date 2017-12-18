@@ -1,11 +1,10 @@
 <?php
 
-	namespace Viper\Template;
-	
-	use Viper\Support\Collection;
+namespace Viper\Template;
 
-	class NodeCollection extends Collection {
-		
-	}
+use Viper\Support\Collection;
 
-?>
+class NodeCollection extends Collection {
+
+}
+

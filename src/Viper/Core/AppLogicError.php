@@ -1,9 +1,9 @@
 <?php
 
-	namespace Viper\Core;
-	
-	class AppLogicError extends \Exception {
-	
-	}
+namespace Viper\Core;
 
-?>
+class AppLogicError extends \Exception {
+
+}
+
+	

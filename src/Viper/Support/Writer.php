@@ -1,15 +1,15 @@
 <?php
 
-	namespace Viper\Support;
+namespace Viper\Support;
 
-    interface Writer {
+interface Writer {
 
-        public function newline();
+    public function newline();
 
-        public function write(string $msg);
+    public function write(string $msg);
 
-        public function append(string $msg);
+    public function append(string $msg);
 
-        public function dump($msg);
+    public function dump($msg);
 
-    }
+}

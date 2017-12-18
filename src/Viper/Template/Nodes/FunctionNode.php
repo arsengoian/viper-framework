@@ -1,7 +1,6 @@
 <?php
 	
-	namespace Viper\Template\Nodes;
-	
-	class FunctionNode extends LogicalNode {}
+namespace Viper\Template\Nodes;
 
-?>
+class FunctionNode extends LogicalNode {}
+

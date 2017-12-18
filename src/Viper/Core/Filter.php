@@ -11,6 +11,8 @@ namespace Viper\Core;
 
 use Viper\Core\Routing\App;
 
+// TODO add optional controller include and exclude lists
+
 abstract class Filter
 {
     private $app;
