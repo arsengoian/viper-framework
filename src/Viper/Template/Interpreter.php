@@ -11,7 +11,6 @@
 namespace Viper\Template;
 
 use Viper\Core\Routing\HttpException;
-use WideImage\Exception\Exception;
 
 abstract class Interpreter extends Preprocessor {
 
