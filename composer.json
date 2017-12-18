@@ -1,0 +1,26 @@
+{
+  "name": "arsengoian/viper-framework",
+  "description": "A lightweight multi-purpose PHP MVC framework",
+  "license": "Apache License 2.0",
+  "keywords": ["framework", "viper"],
+  "authors": [
+    {
+      "name": "Arsen Goian",
+      "email": "arsengoian@gmail.com"
+    }
+  ],
+  "autoload": {
+    "psr-0" : {
+      "Viper" : "src"
+    }
+  },
+  "minimum-stability": "dev",
+  "require": {
+    "php": ">=7.1.0",
+    "jenssegers/date": "v3.2.12",
+    "smottt/wideimage": "1.1.3"
+  },
+  "suggest": {
+    "pimax/fb-messenger-php": "(~1.0)"
+  }
+}
