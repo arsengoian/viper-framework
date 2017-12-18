@@ -6,7 +6,9 @@ Starting developing on Viper is as easy as typing in the console:
     
     composer create-project arsengoian/viper PROJECT_NAME dev-master
     
-and configuring DB credentials
+and configuring DB credentials.
+
+To check out the application build which is deployed with this command (or contribute) check out: https://github.com/arsengoian/viper
 
 ## Configuration
 
