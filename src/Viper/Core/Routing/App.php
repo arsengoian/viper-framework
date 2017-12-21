@@ -174,10 +174,14 @@ abstract class App {
     }
 
     public function setupParams() {
+        // Weird bug with "para" param
         if ($this -> getMethod() == 'GET') {
             $output = [];
             parse_str($_SERVER['QUERY_STRING'], $output);
             $this -> params = new DataCollection($output);
+            $this -> files = new DataCollection();
+        } elseif (strpos($this -> getHeader('Content-Type'), 'application/json') !== FALSE) {
+            $this -> params = new DataCollection(json_decode(file_get_contents('php://input'), TRUE));
             $this -> files = new DataCollection();
         } elseif ($this -> getMethod() == 'POST') {
             if (strpos($this -> getHeader('Content-Type'), 'multipart/form-data') !== FALSE) {
@@ -197,9 +201,6 @@ abstract class App {
                 if (count($this -> files) < 1)
                     $this -> files = new DataCollection();
 
-            } elseif (strpos($this -> getHeader('Content-Type'), 'application/json') !== FALSE) {
-                $this -> params = new DataCollection(json_decode(file_get_contents('php://input')));
-                $this -> files = new DataCollection();
             } else {
                 $this -> fromPHPInput();
             }
