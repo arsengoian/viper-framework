@@ -26,7 +26,7 @@ use Viper\Support\Writer;
 // TODO logs not logging errors =(
 
 
-abstract class App {
+abstract class App extends Loggable{
 
     private $route;
     private $params;
@@ -37,9 +37,6 @@ abstract class App {
     private $session;
     private $cookies;
     private $router;
-
-    private $logger;
-    private $errlogger;
 
     protected abstract function onLoad(): void;
 
@@ -86,25 +83,7 @@ abstract class App {
         $this -> router = new Router($this);
     }
 
-    private function dummyLogger(): Writer {
-        return new class() implements Writer {
-            public function newline() {}
-            public function write(string $msg) {}
-            public function append(string $msg) {}
-            public function dump($var) {}
-        };
-    }
 
-    public function log(string $key, string $string) {
-        $logger = Util::RAM('logger.'.$key, function() use($key) {
-            if (Config::get('DEBUG')) {
-                return new DaemonLogger(ROOT.'/logs/'.$key.'.log');
-            } else {
-                return $this -> dummyLogger();
-            }
-        });
-        $logger -> write($string);
-    }
 
     private function filter(string $name): Filter {
         return new $name($this);

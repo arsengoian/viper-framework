@@ -90,7 +90,7 @@ class Router
 
     public function runAction(string $controller_name, string $action): ?Viewable {
 
-        $this -> app -> log('access', 'New request: '.$controller_name.' '.$action);
+        App::log('request', 'New request: '.$controller_name.' '.$action);
 
         $compatible_name = str_replace('App\Controllers', 'app\Controllers', $controller_name);
         $compatible_name = str_replace('\\', DIRECTORY_SEPARATOR, $compatible_name);
