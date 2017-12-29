@@ -31,16 +31,18 @@ class Util
     }
 
     public static function trimLines(string $mutiLineText): string {
-        self::eachLine($mutiLineText, function($line) {
-            trim($line);
+        return self::eachLine($mutiLineText, function($line): string  {
+            return trim($line);
         });
     }
 
-    public static function eachLine(string &$mutiLineText, callable $run) {
+    public static function eachLine(string &$mutiLineText, callable $run): string {
         if ((new ReflectionFunction($run)) -> getNumberOfRequiredParameters() != 1)
-            throw new UtilException('Run callback must contain 1 parameter $line');
+            throw new UtilException('Run callback must contain 1 string parameter $line and return string');
+        $lines = [];
         foreach(self::expodeGenerator($mutiLineText, "\n")() as $line)
-            $run($line);
+            $lines[] = $run($line);
+        return implode("\n", $lines);
     }
 
     public static function expodeGenerator(string $str, string $separator = ','): callable {
