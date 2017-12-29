@@ -13,6 +13,7 @@ use ReflectionFunction;
 
 class Util
 {
+    // String functions
     public static function match(string $switch, array $fields, callable $default = NULL): bool {
         foreach ($fields as $key => $call) {
             if (self::contains($switch, $key)){
@@ -27,6 +28,19 @@ class Util
 
     public static function contains(string $haystack, string $needle): bool {
         return strpos($haystack, $needle) !== FALSE;
+    }
+
+    public static function trimLines(string $mutiLineText): string {
+        self::eachLine($mutiLineText, function($line) {
+            trim($line);
+        });
+    }
+
+    public static function eachLine(string &$mutiLineText, callable $run) {
+        if ((new ReflectionFunction($run)) -> getNumberOfRequiredParameters() != 1)
+            throw new UtilException('Run callback must contain 1 parameter $line');
+        foreach(self::expodeGenerator($mutiLineText, "\n")() as $line)
+            $run($line);
     }
 
     public static function expodeGenerator(string $str, string $separator = ','): callable {
