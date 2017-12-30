@@ -36,7 +36,7 @@ class Router
 
         $controller_name = $first = $app -> routeShift();
         if ($first) {
-            $action = $app -> routeShift();
+            $action = $app -> routeSegment(0);
             if (!$action)
                 $action = strtolower($app -> getMethod());
         } else {
@@ -60,6 +60,10 @@ class Router
             $controller_name = ucfirst(strtolower($controller_name)).'Controller';
         }
         $controller_name = self::CONTROLLERS_NAMESPACE.$controller_name;
+
+        if ($action == $app -> routeSegment(0))
+            $this -> app -> routeShift(); // Shifting only now because earlier we weren't sure that the method exists
+                                          // It could have been a parameter
 
         $content = $this -> runAction($controller_name, $action);
         if ($content)
