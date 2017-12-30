@@ -38,6 +38,8 @@ abstract class App extends Loggable{
     private $cookies;
     private $router;
 
+    private $exceptionsDisabledFlag = FALSE;
+
     protected abstract function onLoad(): void;
 
     protected abstract function systemOnLoad(): void;
@@ -276,6 +278,13 @@ abstract class App extends Loggable{
     }
 
 
+
+
+    public function disableExceptionHandler() {
+        $this -> exceptionsDisabledFlag = TRUE;
+    }
+
+
     public function parseResponse() {
 
         ob_start();
@@ -300,11 +309,16 @@ abstract class App extends Loggable{
             header("Connection: close");
 
         } catch (\Throwable $exc) {
-            // If not caught earlier
-            try {
-                echo View::parseException($exc);
-            } catch (\Exception $e) {
-                echo App::handler($exc, isset($this -> params['prettyprint']));
+
+            if (!$this -> exceptionsDisabledFlag) {
+                // If not caught earlier
+                try {
+                    echo View::parseException($exc);
+                } catch (\Exception $e) {
+                    echo App::handler($exc, isset($this -> params['prettyprint']));
+                }
+            } else {
+                throw $exc;
             }
         }
 
