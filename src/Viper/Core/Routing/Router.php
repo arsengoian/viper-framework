@@ -123,7 +123,7 @@ class Router
 
         $controller = new $controller_name($this -> app);
 
-        return $controller -> $action($this -> app -> routeSegments());
+        return call_user_func_array([$controller, $action], $this -> app -> routeSegments());
 
     }
 }
