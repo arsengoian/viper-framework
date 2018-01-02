@@ -304,7 +304,6 @@ abstract class App extends Loggable{
             }
 
             $size = ob_get_length();
-            header("Content-Encoding: none");
             header("Content-Length: {$size}");
             header("Connection: close");
 
