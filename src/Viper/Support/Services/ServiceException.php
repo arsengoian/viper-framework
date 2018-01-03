@@ -9,9 +9,9 @@
 namespace Viper\Support\Services;
 
 
-use Viper\Core\StringCodeLogicException;
+use Viper\Core\AppLogicException;
 
-class ServiceException extends StringCodeLogicException
+class ServiceException extends AppLogicException
 {
 
 }

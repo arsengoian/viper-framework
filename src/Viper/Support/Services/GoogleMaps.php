@@ -10,6 +10,7 @@ namespace Viper\Support\Services;
 
 
 use Viper\Support\Libs\Location;
+use Viper\Core\Config;
 
 /**
  * Class GoogleMaps
@@ -26,7 +27,7 @@ class GoogleMaps
             'location' => (string) $location,
             'radius' => 3500,
             'type' => 'cafe',
-            'key' => GOOGLE_MAPS_API_KEY
+            'key' => Config::get('Google.API_KEY')
         ]);
 
         $ch = curl_init();
@@ -51,7 +52,8 @@ class GoogleMaps
             $places[] = [
                 'place' => $place -> place_id,
                 'place_name' => $place -> name,
-                'place_coordinates' => $place -> geometry -> location -> lat . ',' . $place -> geometry -> location -> lng
+                'place_coordinates' => $place -> geometry -> location -> lat . ',' . $place -> geometry -> location -> lng,
+                'photo' => $place -> photos[0] -> photo_reference
             ];
         }
 
