@@ -53,7 +53,7 @@ class GoogleMaps
                 'place' => $place -> place_id,
                 'place_name' => $place -> name,
                 'place_coordinates' => $place -> geometry -> location -> lat . ',' . $place -> geometry -> location -> lng,
-                'photo' => $place -> photos[0] -> photo_reference
+                'photo' => isset($place -> photos) ? $place -> photos[0] -> photo_reference: ''
             ];
         }
 
