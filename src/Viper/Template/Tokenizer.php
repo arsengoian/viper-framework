@@ -322,7 +322,6 @@ abstract class Tokenizer extends Collection {
 					if (isset($this -> raw[$pos - 1]) && preg_match('/[:;\\[({]/', $char = $this -> raw[$pos - 1]))
 						$token .= $char;
 
-
 					$len = strlen($token);
 					$stoken = substr($token, 0, $len - 1);
 					$tokenend = $token[$len - 1];
