@@ -11,6 +11,9 @@ namespace Viper\Core\Model\DB\MSSql;
 
 use Viper\Core\Model\DB\Common\SQLTable;
 use Viper\Core\Model\DB\DBException;
+use Viper\Core\Model\DB\MSSql\Types\DateType;
+use Viper\Core\Model\DB\MSSql\Types\IntegerType;
+use Viper\Core\Model\DB\MSSql\Types\StringType;
 use Viper\Core\Model\DBField;
 use Viper\Support\ValidationException;
 
@@ -19,6 +22,16 @@ use Viper\Support\ValidationException;
 
 class MSSqlDBTableStructure extends SQLTable
 {
+    public static function SQLTypeClasses (): array
+    {
+        return [
+            StringType::class,
+            IntegerType::class,
+            DateType::class
+        ];
+    }
+
+
     private function tableExists() {
         try {
             self::DB()->select($this->table, 'id', '1 LIMIT 1');

@@ -6,9 +6,10 @@
  * Time: 19:23
  */
 
-namespace Viper\Core\Model\Types;
+namespace Viper\Core\Model\DB\MSSql\Types;
 
 
+use Viper\Core\Model\DB\Types\Type;
 use Viper\Support\ValidationException;
 use Jessengers\Date\Date;
 use InvalidArgumentException;

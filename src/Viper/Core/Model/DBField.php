@@ -9,10 +9,7 @@
 namespace Viper\Core\Model;
 
 
-use Viper\Core\Model\Types\DateType;
-use Viper\Core\Model\Types\IntegerType;
-use Viper\Core\Model\Types\StringType;
-use Viper\Core\Model\Types\Type;
+use Viper\Core\Model\DB\Types\Type;
 use Viper\Support\Libs\Util;
 
 class DBField
@@ -27,13 +24,7 @@ class DBField
     private $auto_increment;
     private $not_null;
 
-    public const TYPES = [
-        StringType::class,
-        IntegerType::class,
-        DateType::class
-    ];
-
-    public function __construct (string $name, string $column)
+    public function __construct (string $name, string $column, array $sqlTypeClasses)
     {
         $this -> query = $column;
         $this -> name = $name;
@@ -46,7 +37,7 @@ class DBField
             $this -> size = (int) preg_replace('/^.+\((.+)\)$/', '$1', $this -> type);
         $this -> text_type = preg_replace('/^(.+)\(.*$/', '$1', $this -> type);
 
-        foreach(self::TYPES as $type) {
+        foreach($sqlTypeClasses as $type) {
             $specimen = new $type($this -> text_type);
             /** @noinspection PhpUndefinedMethodInspection */
             if (in_array($this -> text_type, $specimen -> availableTypes())) {

@@ -10,8 +10,8 @@ namespace Viper\Core\Model;
 
 use Viper\Core\Model\DB\DBTableStructure;
 use Viper\Core\StringCodeException;
-use Viper\Core\Model\Types\SizedType;
-use Viper\Core\Model\Types\Type;
+use Viper\Core\Model\DB\Types\SizedType;
+use Viper\Core\Model\DB\Types\Type;
 use Viper\Core\Model\DB\DBException;
 use Viper\Core\Config;
 use Viper\Support\Required;
@@ -61,9 +61,9 @@ abstract class ModelConfig extends DBTableStructure
 
     private function dbFields(array $columns): array {
         $ret = [];
-        $ret['id'] = new DBField('id', $this -> idQuery());
+        $ret['id'] = new DBField('id', $this -> idQuery(), self::SQLTypeClasses());
         foreach($columns as $column => $value)
-            $ret[$column] = new DBField($column, $value);
+            $ret[$column] = new DBField($column, $value, self::SQLTypeClasses());
         return $ret;
     }
 

@@ -6,7 +6,7 @@
  * Time: 15:56
  */
 
-namespace Viper\Core\Model\Types;
+namespace Viper\Core\Model\DB\Types;
 
 
 use Viper\Core\Model\ModelConfigException;

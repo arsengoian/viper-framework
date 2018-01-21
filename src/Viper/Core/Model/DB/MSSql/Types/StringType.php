@@ -6,9 +6,10 @@
  * Time: 16:06
  */
 
-namespace Viper\Core\Model\Types;
+namespace Viper\Core\Model\DB\MSSql\Types;
 
 
+use Viper\Core\Model\DB\Types\SizedType;
 use Viper\Core\Routing\HttpException;
 use Viper\Support\ValidationException;
 

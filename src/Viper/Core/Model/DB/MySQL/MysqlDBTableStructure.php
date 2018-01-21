@@ -10,6 +10,9 @@ namespace Viper\Core\Model\DB\MySQL;
 
 
 use Viper\Core\Model\DB\Common\SQLTable;
+use Viper\Core\Model\DB\MySQL\Types\DateType;
+use Viper\Core\Model\DB\MySQL\Types\IntegerType;
+use Viper\Core\Model\DB\MySQL\Types\StringType;
 use Viper\Core\Model\DBField;
 use Viper\Core\Model\DB\DBException;
 use Viper\Support\ValidationException;
@@ -17,6 +20,15 @@ use Viper\Support\ValidationException;
 
 class MysqlDBTableStructure extends SQLTable
 {
+
+    public static function SQLTypeClasses (): array
+    {
+        return [
+            StringType::class,
+            IntegerType::class,
+            DateType::class
+        ];
+    }
 
 
     private function tableExists() {

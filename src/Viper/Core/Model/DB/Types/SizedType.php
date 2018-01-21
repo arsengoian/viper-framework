@@ -6,7 +6,7 @@
  * Time: 17:38
  */
 
-namespace Viper\Core\Model\Types;
+namespace Viper\Core\Model\DB\Types;
 
 
 abstract class SizedType extends Type

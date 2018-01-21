@@ -29,11 +29,15 @@ abstract class DBTableStructure
 
     abstract protected function dropColumn(string $colName);
 
-    abstract protected static function DB(): RDBMS;
-
     abstract protected function checkColumnTypes();
 
     abstract protected function getTableStructure(): array;
 
     abstract protected function getCreateQuery(): string;
+
+
+
+    abstract protected static function DB(): RDBMS;
+
+    abstract public static function SQLTypeClasses(): array;
 }
