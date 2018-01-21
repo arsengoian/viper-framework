@@ -8,10 +8,10 @@
 
 namespace Viper\Core\Model;
 
+use Viper\Core\Model\DB\DB;
 use Viper\Support\Collection;
 use Viper\Support\IdGen;
 use Viper\Support\IdGenException;
-use Viper\Support\MysqlDB;
 
 // TODO add queries
 // TODO fix random order in all()
@@ -38,7 +38,7 @@ abstract class Model extends Element {
 
     public static function all(string $key = NULL, string $value = NULL): Collection {
         return static::attempt(function () use ($key, $value): Collection {
-            $db = MysqlDB::instance();
+            $db = DB::instance();
             if ($key || $value == 0)
                 $dat = $db -> selectall(static::table());
             else $dat = $db -> find(static::table(), implode(',', static::columns()), [$key => $value]);

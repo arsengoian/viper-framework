@@ -8,11 +8,11 @@
 
 namespace Viper\Core\Model;
 
+use Viper\Core\Model\DB\DBTableStructure;
 use Viper\Core\StringCodeException;
 use Viper\Core\Model\Types\SizedType;
 use Viper\Core\Model\Types\Type;
-use Viper\Support\MysqlDB;
-use Viper\Support\MysqlDBException;
+use Viper\Core\Model\DB\DBException;
 use Viper\Core\Config;
 use Viper\Support\Required;
 use Viper\Support\ValidationException;
@@ -22,19 +22,17 @@ use Viper\Support\Validator;
 // TODO test all constraints
 
 
-class ModelConfig
+abstract class ModelConfig extends DBTableStructure
 {
     const MAX_RETRIES = 6;
 
-    private $table;
-    private $columns;
-    private $idSpace;
-    private $constraints;
-    private $migrations;
+    protected $table;
+    protected $columns;
+    protected $idSpace;
+    protected $constraints;
+    protected $migrations;
 
-    private $allowOverwrite;
-
-    use MysqlDBTableStructure;
+    protected $allowOverwrite;
 
 
     public function __construct (array $arr, string $cln)
@@ -53,7 +51,7 @@ class ModelConfig
 
     }
 
-    private function parseComplex(array $a): array {
+    protected function parseComplex(array $a): array {
         $ret = [];
         foreach($a as $k => $v)
             foreach (explode(',', $k) as $key)
@@ -68,8 +66,6 @@ class ModelConfig
             $ret[$column] = new DBField($column, $value);
         return $ret;
     }
-
-
 
 
 
@@ -143,41 +139,14 @@ class ModelConfig
             $type -> setSize($fld -> getSize());
     }
 
-    private function validateChecks(string $field, $value) {
-        // Process checks
-        $constraints = [];
-        if (isset($this -> constraints['checks'])) {
-            foreach ($this->parseComplex($this->constraints['checks']) as $column => $check)
-                if ($column == $field)
-                    $constraints[] = $value . $check;
 
-            if (count($constraints) == 0)
-                return;
-
-            $result = MysqlDB::instance()->qResult('SELECT ' . implode(' AND ', $constraints) . ' AS _constraint');
-
-            if(!$result[0]['_constraint'])
-                throw new ValidationException('Constraints not true for field '.$field.' with value '.$value);
-        }
-    }
-
-    private function validateUnique(string $field, $value, string $className) {
-        // Check unique
-        if (isset($this -> constraints['unique'])) {
-            foreach (explode(',', $this->constraints['unique']) as $column => $unique)
-                if (trim($column) == $field)
-                    /** @noinspection PhpUndefinedMethodInspection */
-                    if ($className::getBy($field, $value))
-                        throw new ValidationException("Field $field with value $value failed unique check; class: $className");
-        }
-    }
 
 
 
     public function testTable(StringCodeException $e, callable $retry, int $num = 0) {
         try {
             switch (get_class($e)) {
-                case MysqlDBException::class:
+                case DBException::class:
                     if ($this -> analyzeMysql($e))
                         return $retry();
                     else throw new DBUnsolvableException($e);
@@ -217,7 +186,7 @@ class ModelConfig
                 if ($this->writeAllowed()) {
                     try {
                         $this->createTable();
-                    } catch (MysqlDBException $exc) {
+                    } catch (DBException $exc) {
                         if ($exc -> getCode() !== 0)
                             throw $exc;
                     }
@@ -232,7 +201,45 @@ class ModelConfig
         }
     }
 
+    private function runMigrations() {
+        // TODO test if data can't be migrated due to constraints/type differences
+        foreach ($this -> migrations as $old => $new) {
+            if (isset($this -> columns[$old]))
+                throw new ModelConfigException('Warning! Column '.$old.' will be re-created with new request');
+            if (!isset($this -> columns[$new]))
+                throw new ModelConfigException('Can`t find column '.$new.' to migrate');
+            if ($this -> fieldExists($new)) {
+                return; // Migration already completed
+            } elseif (!$this -> fieldExists($old)) {
+                return; // Outdated migration
+            } else {
+                if (!$this -> overwriteAllowed())
+                    throw new ModelConfigException('Migrations require overwriteAllowed rights');
+                $this -> changeColumn($old, $this -> getField($new));
+            }
+        }
+    }
 
+
+
+
+    private function createTable() {
+        self::DB() -> response($this -> getCreateQuery());
+    }
+
+
+    private function createMissingColumns() {
+        foreach($this -> getColumns() as $column)
+            if (!$this -> fieldExists($column))
+                $this -> createColumn($this -> getField($column));
+    }
+
+    private function sanitizeColumns() {
+        foreach ($this -> getTableStructure() as $column) {
+            if (!in_array($column['Field'], $this -> getColumns()))
+                $this -> dropColumn($column);
+        }
+    }
     // TODO implement command-line interface daemon for these
 
     public function updateTableStructure() {
@@ -241,9 +248,27 @@ class ModelConfig
         $this -> checkTableStructure();
     }
 
-    public function dropTable() {
-        if ($this -> deleteAllowed())
-            MysqlDB::instance() -> response('DROP TABLE '.$this -> getTable());
+    // TODO if called upon error try various remedies in order to save time if the first one works
+    private function checkTableStructure() {
+        $this -> runMigrations();
+
+        if ($this -> writeAllowed()) {
+            $this -> createMissingColumns();
+            // TODO ADD foreign, primary keys and constraints
+        }
+
+        // Check column structure
+        if ($this -> overwriteAllowed()) {
+            $this -> checkColumnTypes();
+            // TODO edit column order so that it corresponds
+            // TODO MODIFY keys and constraints
+        }
+
+        // Remove columns
+        if ($this -> deleteAllowed()) {
+            $this -> sanitizeColumns();
+            // TODO delete keys and constraints
+        }
     }
 
 }

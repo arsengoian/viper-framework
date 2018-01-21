@@ -9,22 +9,22 @@
 namespace Viper\Support;
 
 
+use Viper\Core\Model\DB\DB;
+use Viper\Core\Model\DB\DBException;
+
 class IdGen {
 
     const TABLE = '__IdGen';
-    #  Db structure:	tinyint len 	|	varchar[63] p1	|	varchar[63] p2	|	varchar[63] id	|	varchar[63] k
-    public static function createQuery() {
-        return 'CREATE TABLE IF NOT EXISTS '.self::TABLE.' ( 
-          len tinyint NOT NULL,
-          table_key varchar(63) NOT NULL,
-          p1 varchar(63) NOT NULL, 
-          p2 varchar(63) NOT NULL, 
-          k varchar(63) NOT NULL, 
-          id varchar(63) NOT NULL, 
-          CHECK (len>0), 
-          CHECK (len<33) 
-        ) ';
-    }
+    const COLUMNS = [
+        ['len', 'tinyint NOT NULL'],
+        ['table_key', 'varchar(63) NOT NULL'],
+        ['p1', 'varchar(63) NOT NULL'],
+        ['p2', 'varchar(63) NOT NULL'],
+        ['k', 'varchar(63) NOT NULL'],
+        ['id', 'varchar(63) NOT NULL'],
+        ['CHECK', '(len>0)'],
+        ['CHECK', '(len<33)']
+    ];
 
     private $len;
     private $current;
@@ -39,12 +39,12 @@ class IdGen {
         if (strlen($key) > 63)
             throw new IdGenException('Key must not exceed 63 characters');
         $this -> len = (string) $len;
-        $cdb = MysqlDB::instance();
+        $cdb = DB::instance();
 
         try {
             $dat = $cdb -> select(self::TABLE, 'id, p1, p2, k', "len = $len AND table_key = \"$key\"");
-        } catch(MysqlDBException $e) {
-            $cdb -> response(self::createQuery());
+        } catch(DBException $e) {
+            $cdb -> createTable(self::TABLE, self::COLUMNS);
             $dat = [];
         }
         if (count($dat) < 1) {
@@ -154,7 +154,7 @@ class IdGen {
             throw new IdGenException('Id overflow');
         if ($newseed < $min)
             throw new IdGenException('Id too small');
-        else (MysqlDB::instance() -> update(self::TABLE, ['id' => $newseed], "len = {$this -> len}"));
+        else (DB::instance() -> update(self::TABLE, ['id' => $newseed], "len = {$this -> len}"));
 
         $range = bcsub($max, $min);
 

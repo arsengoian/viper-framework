@@ -16,8 +16,7 @@ class Util
     public static function match(string $switch, array $fields, callable $default = NULL): bool {
         foreach ($fields as $key => $call) {
             if (self::contains($switch, $key)){
-                $call();
-                return TRUE;
+                return $call();
             }
         }
         if ($default)

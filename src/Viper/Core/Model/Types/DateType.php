@@ -10,7 +10,7 @@ namespace Viper\Core\Model\Types;
 
 
 use Viper\Support\ValidationException;
-use Jenssegers\Date\Date;
+use Jessengers\Date\Date;
 use InvalidArgumentException;
 
 class DateType extends Type
