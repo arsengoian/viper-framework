@@ -23,10 +23,10 @@ use Viper\Support\Writer;
 
 // TODO add data to be added to all views
 
-// TODO add logs (esp.for background tasks)
+// TODO logs not logging errors =(
 
 
-abstract class App {
+abstract class App extends Loggable{
 
     private $route;
     private $params;
@@ -38,8 +38,7 @@ abstract class App {
     private $cookies;
     private $router;
 
-    private $logger;
-    private $errlogger;
+    private $exceptionsDisabledFlag = FALSE;
 
     protected abstract function onLoad(): void;
 
@@ -86,25 +85,7 @@ abstract class App {
         $this -> router = new Router($this);
     }
 
-    private function dummyLogger(): Writer {
-        return new class() implements Writer {
-            public function newline() {}
-            public function write(string $msg) {}
-            public function append(string $msg) {}
-            public function dump($var) {}
-        };
-    }
 
-    public function log(string $key, string $string) {
-        $logger = Util::RAM('logger.'.$key, function() use($key) {
-            if (Config::get('DEBUG')) {
-                return new DaemonLogger(ROOT.'/logs/'.$key.'.log');
-            } else {
-                return $this -> dummyLogger();
-            }
-        });
-        $logger -> write($string);
-    }
 
     private function filter(string $name): Filter {
         return new $name($this);
@@ -174,10 +155,14 @@ abstract class App {
     }
 
     public function setupParams() {
+        // Weird bug with "para" param
         if ($this -> getMethod() == 'GET') {
             $output = [];
             parse_str($_SERVER['QUERY_STRING'], $output);
             $this -> params = new DataCollection($output);
+            $this -> files = new DataCollection();
+        } elseif (strpos($this -> getHeader('Content-Type'), 'application/json') !== FALSE) {
+            $this -> params = new DataCollection(json_decode(file_get_contents('php://input'), TRUE));
             $this -> files = new DataCollection();
         } elseif ($this -> getMethod() == 'POST') {
             if (strpos($this -> getHeader('Content-Type'), 'multipart/form-data') !== FALSE) {
@@ -197,9 +182,6 @@ abstract class App {
                 if (count($this -> files) < 1)
                     $this -> files = new DataCollection();
 
-            } elseif (strpos($this -> getHeader('Content-Type'), 'application/json') !== FALSE) {
-                $this -> params = new DataCollection(json_decode(file_get_contents('php://input')));
-                $this -> files = new DataCollection();
             } else {
                 $this -> fromPHPInput();
             }
@@ -296,6 +278,13 @@ abstract class App {
     }
 
 
+
+
+    public function disableExceptionHandler() {
+        $this -> exceptionsDisabledFlag = TRUE;
+    }
+
+
     public function parseResponse() {
 
         ob_start();
@@ -315,16 +304,20 @@ abstract class App {
             }
 
             $size = ob_get_length();
-            header("Content-Encoding: none");
             header("Content-Length: {$size}");
             header("Connection: close");
 
         } catch (\Throwable $exc) {
-            // If not caught earlier
-            try {
-                echo View::parseException($exc);
-            } catch (\Exception $e) {
-                echo App::handler($exc, isset($this -> params['prettyprint']));
+
+            if (!$this -> exceptionsDisabledFlag) {
+                // If not caught earlier
+                try {
+                    echo View::parseException($exc);
+                } catch (\Exception $e) {
+                    echo App::handler($exc, isset($this -> params['prettyprint']));
+                }
+            } else {
+                throw $exc;
             }
         }
 

@@ -21,7 +21,7 @@ abstract class Controller
         $this -> app = $app;
     }
 
-    protected function param(string $key, bool $shout = FALSE, callable $err_callback = NULL): ?string {
+    protected function param(string $key, bool $shout = FALSE, callable $err_callback = NULL) {
         return $this -> app -> getParam($key, $shout, $err_callback);
     }
 

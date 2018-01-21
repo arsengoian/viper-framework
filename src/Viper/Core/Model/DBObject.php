@@ -27,7 +27,7 @@ abstract class DBObject extends Collection {
         if (!$local_data) {
             $data = DB::instance() -> find(static::table(), implode(',', static::columns()), $this -> condition);
             if (count($data) == 0)
-                throw new ModelException('Not found');
+                throw new ModelException('Not found: object with '.json_encode($condition).' missing');
             if (count($data) > 1)
                 throw new ModelException('Select condition uncertain');
             parent::__construct($data[0]);

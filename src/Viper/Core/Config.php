@@ -25,14 +25,13 @@ class Config {
 
 
     // TODO parse not all configs (because it's taking too much time). Find a more efficient yaml parser
-    // Currently most time is wasted for yaml parsing...
     public static function parsePreferences() {
         foreach (new GlobIterator(ROOT.DIRECTORY_SEPARATOR.'config'.DIRECTORY_SEPARATOR.'*.yaml') as $file) {
             $filechunks = explode(DIRECTORY_SEPARATOR,(string)$file);
             $chunk = array_pop($filechunks);
             if ($chunk == 'local.yaml' || $chunk == 'global.yaml')
                 self::parse($file);
-            else self::parse($file, strtoupper(explode('.', $file)[0]));
+            else self::parse($file, strtoupper(explode('.', basename($file))[0]));
         }
     }
 
@@ -52,6 +51,10 @@ class Config {
 
     public static function get(string $key) {
         return $GLOBALS['__preferences__'][strtoupper($key)] ?? NULL;
+    }
+
+    public static function all() {
+        return $GLOBALS['__preferences__'];
     }
 
 }

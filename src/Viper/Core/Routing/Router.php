@@ -36,7 +36,7 @@ class Router
 
         $controller_name = $first = $app -> routeShift();
         if ($first) {
-            $action = $app -> routeShift();
+            $action = $app -> routeSegment(0);
             if (!$action)
                 $action = strtolower($app -> getMethod());
         } else {
@@ -60,6 +60,10 @@ class Router
             $controller_name = ucfirst(strtolower($controller_name)).'Controller';
         }
         $controller_name = self::CONTROLLERS_NAMESPACE.$controller_name;
+
+        if ($action == $app -> routeSegment(0))
+            $this -> app -> routeShift(); // Shifting only now because earlier we weren't sure that the method exists
+                                          // It could have been a parameter
 
         $content = $this -> runAction($controller_name, $action);
         if ($content)
@@ -90,7 +94,7 @@ class Router
 
     public function runAction(string $controller_name, string $action): ?Viewable {
 
-        $this -> app -> log('access', 'New request: '.$controller_name.' '.$action);
+        App::log('request', 'New request: '.$controller_name.' '.$action);
 
         $compatible_name = str_replace('App\Controllers', 'app\Controllers', $controller_name);
         $compatible_name = str_replace('\\', DIRECTORY_SEPARATOR, $compatible_name);
@@ -119,7 +123,7 @@ class Router
 
         $controller = new $controller_name($this -> app);
 
-        return $controller -> $action($this -> app -> routeSegments());
+        return call_user_func_array([$controller, $action], $this -> app -> routeSegments());
 
     }
 }

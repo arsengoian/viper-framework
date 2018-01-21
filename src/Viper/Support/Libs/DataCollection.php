@@ -13,5 +13,9 @@ use Viper\Support\Collection;
 
 class DataCollection extends Collection
 {
+    public function __construct (array $arr = [])
+    {
+        parent::__construct($arr, TRUE);
+    }
 
 }

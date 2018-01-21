@@ -107,6 +107,8 @@ abstract class ModelConfig extends DBTableStructure
         $fld = $this -> getField($field);
         $type = $fld -> getSQLType();
         $this -> setupTypeHandler($type, $fld);
+        if (!$fld -> getNotNull() && $value === NULL)
+            return NULL;
         return $type -> convert($value);
     }
 

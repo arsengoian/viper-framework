@@ -64,6 +64,12 @@ class Validator
         },"%n must be a number");
     }
 
+    public function isArray (string $key, ?string $varname = NULL): ?array {
+        return $this -> validate($key, $varname, function($key) {
+            return is_array($key);
+        },"%n must be an array");
+    }
+
     public function compare (string $key, int $than, bool $more = TRUE, ?string $varname = NULL): ?string {
         return $this -> validate($key, $varname, function($key) use ($than, $more) {
             return $more ? $key > $than: $key < $than;
