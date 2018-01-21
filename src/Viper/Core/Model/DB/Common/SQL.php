@@ -186,6 +186,7 @@ abstract class SQL extends PDOWrapper
     }
 
 
+
     private function testOne(string $table, string $condition) {
         $this -> test($this -> select($table, '*', $condition));
     }
@@ -193,6 +194,8 @@ abstract class SQL extends PDOWrapper
     private function testOneFind(string $table, array $conditionarr) {
         $this -> test($this -> find($table, '*', $conditionarr));
     }
+
+
 
     private function test(array $testarr) {
         if (count($testarr) > 1)

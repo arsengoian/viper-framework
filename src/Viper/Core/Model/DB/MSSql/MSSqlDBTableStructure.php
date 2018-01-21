@@ -34,7 +34,7 @@ class MSSqlDBTableStructure extends SQLTable
 
     private function tableExists() {
         try {
-            self::DB()->select($this->table, 'id', '1 LIMIT 1');
+            static::DB()->select($this->table, 'id', '1 LIMIT 1');
         } catch (DBException $e) {
             return FALSE;
         }
@@ -61,8 +61,10 @@ class MSSqlDBTableStructure extends SQLTable
     }
 
     protected function getCreateQuery(): string {
-        $query = 'CREATE TABLE IF NOT EXISTS '.$this -> getTable();
-        $query .= " ( \n".implode(",\n", $this -> getQueryLines())."\n) ";
+        $query = "IF OBJECT_ID(N'".$this->getTable()."', N'U') IS NULL".
+            " BEGIN CREATE TABLE ".$this->getTable().' ';
+        $query .= " ( \n".implode(",\n", $this -> getQueryLines())."\n); ";
+        $query .= 'END;';
         return $query;
     }
 
@@ -70,7 +72,18 @@ class MSSqlDBTableStructure extends SQLTable
 
 
     protected function getTableStructure(): array {
-        return self::DB() -> response('DESCRIBE '.$this -> getTable());
+        $response = static::DB() -> response('EXEC sp_columns '.$this -> getTable());
+        $struct = [];
+        foreach ($response as $row)
+            $struct[] = [
+                'Field' => $row['COLUMN_NAME'],
+                'Type' => $row['LENGTH'] ? $row['TYPE_NAME'] : $row['LENGTH'],
+                'NULL' => $row['IS_NULLABLE'],
+                'Key' => '', // Pointless, but may cause future compatibility problems
+                'Default' => $row['COLUMN_DEF'],
+                'Extra' => '', // Not supported...?
+            ];
+        return $struct;
     }
 
 
@@ -82,7 +95,7 @@ class MSSqlDBTableStructure extends SQLTable
                 $column['Type'] != $dbField -> getType() ||
                 ($column['NULL'] === 'NO') == $dbField -> getNotNull() ||
                 $column['Default'] != $dbField -> getDefaultVal() ||
-                $column['Extra'] != $dbField -> getAutoIncrement() ? 'AUTO_INCREMENT' : ''
+                $column['Extra'] != $dbField -> getAutoIncrement() ? 'IDENTITY(1,1)' : ''
                 ) $this -> changeColumn($field, $dbField);
             }
         }
@@ -94,7 +107,7 @@ class MSSqlDBTableStructure extends SQLTable
             $table = $this -> getTable();
             $col = $field -> getName();
             $q = "ALTER TABLE $table ADD $col ".$field -> getQuery();
-            self::DB() -> response($q);
+            static::DB() -> response($q);
         }
     }
 
@@ -103,14 +116,18 @@ class MSSqlDBTableStructure extends SQLTable
             $table = $this -> getTable();
             $col = $new -> getName();
             $query = $new -> getQuery();
-            self::DB() -> response("ALTER TABLE $table CHANGE COLUMN `$old` `$col` $query");
+
+            $table = $this->getTable();
+            if ($col != $old)
+                static::DB() -> response("EXEC sp_rename '$table.$old', '$new', 'COLUMN'");
+            static::DB() -> response("ALTER TABLE $table ALTER COLUMN $col $query");
         }
     }
 
     protected function dropColumn(string $colname) {
         if ($this -> deleteAllowed()) {
             $table = $this -> getTable();
-            self::DB() -> response("ALTER TABLE $table DROP COLUMN $colname");
+            static::DB() -> response("ALTER TABLE $table DROP COLUMN $colname");
         }
     }
 
@@ -125,7 +142,7 @@ class MSSqlDBTableStructure extends SQLTable
             if (count($constraints) == 0)
                 return;
 
-            $result = self::DB()-> response('SELECT ' . implode(' AND ', $constraints) . ' AS _constraint');
+            $result = static::DB()-> response('SELECT ' . implode(' AND ', $constraints) . ' AS _constraint');
 
             if(!$result[0]['_constraint'])
                 throw new ValidationException('Constraints not true for field '.$field.' with value '.$value);
@@ -134,7 +151,7 @@ class MSSqlDBTableStructure extends SQLTable
 
     public function dropTable() {
         if ($this -> deleteAllowed())
-            self::DB() -> response('DROP TABLE '.$this -> getTable());
+            static::DB() -> response('DROP TABLE '.$this -> getTable());
     }
 
 

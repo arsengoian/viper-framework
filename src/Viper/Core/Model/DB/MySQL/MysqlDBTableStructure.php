@@ -33,7 +33,7 @@ class MysqlDBTableStructure extends SQLTable
 
     private function tableExists() {
         try {
-            self::DB()->select($this->table, 'id', '1 LIMIT 1');
+            static::DB()->select($this->table, 'id', '1 LIMIT 1');
         } catch (DBException $e) {
             return FALSE;
         }
@@ -69,7 +69,7 @@ class MysqlDBTableStructure extends SQLTable
 
 
     protected function getTableStructure(): array {
-        return self::DB() -> response('DESCRIBE '.$this -> getTable());
+        return static::DB() -> response('DESCRIBE '.$this -> getTable());
     }
 
 
@@ -93,7 +93,7 @@ class MysqlDBTableStructure extends SQLTable
             $table = $this -> getTable();
             $col = $field -> getName();
             $q = "ALTER TABLE $table ADD $col ".$field -> getQuery();
-            self::DB() -> response($q);
+            static::DB() -> response($q);
         }
     }
 
@@ -102,14 +102,14 @@ class MysqlDBTableStructure extends SQLTable
             $table = $this -> getTable();
             $col = $new -> getName();
             $query = $new -> getQuery();
-            self::DB() -> response("ALTER TABLE $table CHANGE COLUMN `$old` `$col` $query");
+            static::DB() -> response("ALTER TABLE $table CHANGE COLUMN `$old` `$col` $query");
         }
     }
 
     protected function dropColumn(string $colname) {
         if ($this -> deleteAllowed()) {
             $table = $this -> getTable();
-            self::DB() -> response("ALTER TABLE $table DROP COLUMN $colname");
+            static::DB() -> response("ALTER TABLE $table DROP COLUMN $colname");
         }
     }
 
@@ -124,7 +124,7 @@ class MysqlDBTableStructure extends SQLTable
             if (count($constraints) == 0)
                 return;
 
-            $result = self::DB()-> response('SELECT ' . implode(' AND ', $constraints) . ' AS _constraint');
+            $result = static::DB()-> response('SELECT ' . implode(' AND ', $constraints) . ' AS _constraint');
 
             if(!$result[0]['_constraint'])
                 throw new ValidationException('Constraints not true for field '.$field.' with value '.$value);
@@ -133,7 +133,7 @@ class MysqlDBTableStructure extends SQLTable
 
     public function dropTable() {
         if ($this -> deleteAllowed())
-            self::DB() -> response('DROP TABLE '.$this -> getTable());
+            static::DB() -> response('DROP TABLE '.$this -> getTable());
     }
 
 

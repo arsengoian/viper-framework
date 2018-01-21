@@ -61,9 +61,9 @@ abstract class ModelConfig extends DBTableStructure
 
     private function dbFields(array $columns): array {
         $ret = [];
-        $ret['id'] = new DBField('id', $this -> idQuery(), self::SQLTypeClasses());
+        $ret['id'] = new DBField('id', $this -> idQuery(), static::SQLTypeClasses());
         foreach($columns as $column => $value)
-            $ret[$column] = new DBField($column, $value, self::SQLTypeClasses());
+            $ret[$column] = new DBField($column, $value, static::SQLTypeClasses());
         return $ret;
     }
 
@@ -226,7 +226,7 @@ abstract class ModelConfig extends DBTableStructure
 
 
     private function createTable() {
-        self::DB() -> response($this -> getCreateQuery());
+        static::DB() -> response($this -> getCreateQuery());
     }
 
 

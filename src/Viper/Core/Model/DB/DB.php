@@ -21,17 +21,20 @@ use Viper\Support\Libs\Util;
 class DB
 {
     public static function getDBMS(): string {
-        return Util::match($dialect = Config::get('DB_DIALECT'), [
-            'MySQL' => function() {return MysqlDB::class;},
-            'MSSQL' => function() {return MSSqlDB::class;}
-        ], function() use($dialect) {
-            throw new DBException('Invalid RDBMS '.$dialect);
-        });
+        switch ($dialect = Config::get('DB_DIALECT')) {
+            case 'MySQL':
+                return  MysqlDB::class;
+            case 'SQLServer':
+                return MSSqlDB::class;
+            default:
+                throw new DBException('Invalid RDBMS '.$dialect);
+        }
     }
 
     public static function instance(): RDBMS {
         return Util::RAM('db.'.Config::get('DB_DIALECT'), function (): RDBMS {
-            return new ${self::getDBMS()}();
+            $cname = self::getDBMS();
+            return new $cname();
         });
     }
 

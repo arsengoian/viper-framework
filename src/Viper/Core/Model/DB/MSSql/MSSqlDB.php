@@ -22,12 +22,12 @@ class MSSqlDB extends SQL
     function __construct () {
         try {
             parent::__construct(
-                "mysql:host=".Config::get('DB_HOST').
-                ";dbname=".Config::get('DB_NAME').
-                ";charset=".Config::get('DB_CHARSET'),
+                "sqlsrv:Server=".Config::get('DB_HOST').
+                ";Database=".Config::get('DB_NAME'),
                 Config::get('DB_USER'),
                 Config::get('DB_PASS')
             );
+            $this -> setAttribute(PDO::SQLSRV_ATTR_ENCODING, PDO::SQLSRV_ENCODING_UTF8); // TODO move to config (int)
             $this -> setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         } catch (PDOException $e) {
             throw new DBException(
@@ -41,8 +41,11 @@ class MSSqlDB extends SQL
         $rows = [];
         foreach ($columns as $attributes)
             $rows[] = $attributes[0].' '.$attributes[1];
-        $query = 'CREATE TABLE IF NOT EXISTS '.$name;
-        $query .= " ( \n".implode(",\n", $rows)."\n) ";
+
+        $query = "IF OBJECT_ID(N'".$name."', N'U') IS NULL".
+            " BEGIN CREATE TABLE ".$name.' ';
+        $query .= " ( \n".implode(",\n", $rows)."\n); ";
+        $query .= 'END;';
         return $this -> response($query);
     }
 }

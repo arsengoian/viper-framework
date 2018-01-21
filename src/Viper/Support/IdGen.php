@@ -42,7 +42,7 @@ class IdGen {
         $cdb = DB::instance();
 
         try {
-            $dat = $cdb -> select(self::TABLE, 'id, p1, p2, k', "len = $len AND table_key = \"$key\"");
+            $dat = $cdb -> select(self::TABLE, 'id, p1, p2, k', "len = $len AND table_key = '$key'");
         } catch(DBException $e) {
             $cdb -> createTable(self::TABLE, self::COLUMNS);
             $dat = [];

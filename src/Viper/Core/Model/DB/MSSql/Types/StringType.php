@@ -13,6 +13,7 @@ use Viper\Core\Model\DB\Types\SizedType;
 use Viper\Core\Routing\HttpException;
 use Viper\Support\ValidationException;
 
+// TODO support VARCHAR(max)
 class StringType extends SizedType
 {
 
