@@ -34,7 +34,7 @@ class MSSqlDBTableStructure extends SQLTable
 
     private function tableExists() {
         try {
-            static::DB()->select($this->table, 'id', '1 LIMIT 1');
+            static::DB()->select($this->table, 'TOP 1 id', '1');
         } catch (DBException $e) {
             return FALSE;
         }
