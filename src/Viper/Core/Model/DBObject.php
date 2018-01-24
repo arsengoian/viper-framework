@@ -21,15 +21,19 @@ abstract class DBObject extends Collection {
     abstract protected static function columns() : array;
     abstract protected static function idSpace() : int;
 
+    private static function validateDataArr(&$data, array $condition) {
+        if (count($data) == 0)
+            throw new ModelException('Not found: object with '.json_encode($condition).' missing');
+        if (count($data) > 1)
+            throw new ModelException('Select condition uncertain');
+    }
+
     function __construct(array $condition, array $local_data = NULL) {
         $this -> validateConstants();
         $this -> condition = $condition;
         if (!$local_data) {
             $data = DB::instance() -> find(static::table(), implode(',', static::columns()), $this -> condition);
-            if (count($data) == 0)
-                throw new ModelException('Not found: object with '.json_encode($condition).' missing');
-            if (count($data) > 1)
-                throw new ModelException('Select condition uncertain');
+            $this -> validateDataArr($data, $condition);
             parent::__construct($data[0]);
         } else {
             parent::__construct($local_data);
@@ -65,6 +69,13 @@ abstract class DBObject extends Collection {
         } catch (\Exception $e) {
             return NULL;
         }
+    }
+
+    public static function search(string $query, string $key) {
+        $data = DB::instance() -> search(static::table(),implode(',', static::columns()), $query, $key);
+        $condition = ['id', $data[0]['id']];
+        self::validateDataArr($data, $condition);
+        return new static($condition, $data[0]);
     }
 
 

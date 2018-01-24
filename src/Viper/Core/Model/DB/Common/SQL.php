@@ -8,7 +8,7 @@
 
 namespace Viper\Core\Model\DB\Common;
 
-// TODO integrated SELECT TOP support
+// TODO integrated SELECT TOP support for all selects (NULL default - do nothing)
 
 use Viper\Core\Model\DB\PDOWrapper;
 
@@ -28,6 +28,37 @@ abstract class SQL extends PDOWrapper
             'DB::find()'
         );
     }
+
+
+    // TODO allow appendix keys for all
+    public function search(string $table, string $columns = "*", string $condition = "1",
+                           string $key = "", string $appendix = "", string $appendixkey = "") : ?array {
+        $this -> normalizeSelectVals($columns, $condition);
+
+        $key = substr($this -> quote("%".$key."%"), 1, -1);
+        $appendixkey = substr($this -> quote($appendixkey), 1, -1);
+
+        // Find number of keys
+        $knum = substr_count($condition, "?");
+        // Find number of appendix keys
+        $aknum = substr_count($appendix, "?");
+
+        $values = [];
+        for ($i = 0; $i < $knum; $i++)
+            $values[] = $key;
+        for ($i = 0; $i < $aknum; $i++)
+            $values[] = $appendixkey;
+
+        return $this -> preparedStatement(
+            "SELECT $columns FROM $table WHERE $condition $appendix",
+            $values,
+            'DB::search'
+        );
+
+    }
+
+
+
 
     private function normalizeSelectVals(string &$columns, string &$condition) {
         if (!$columns)
@@ -70,70 +101,6 @@ abstract class SQL extends PDOWrapper
     }
 
 
-
-
-    // TODO refactor
-    public function search(string $table, string $columns = "*", string $condition = "1",
-                           string $key = "", string $appendix = "", string $appendixkey = "") : array {
-
-        $key = "%{$this -> quote($key)}%";
-        $appendixkey = $this -> quote($appendixkey);
-
-        $args = [];
-        $value_types = "";
-        $values = [];
-
-        // Find number of keys
-        $knum = substr_count($condition, "?");
-        if ($knum > 0) {
-            switch (gettype($key)) {
-                case "integer":
-                    $t = "i";
-                    break;
-                case "string":
-                default:
-                    $t = "s";
-                    break;
-            }
-            for ($i = 0; $i < $knum; $i++) {
-                $values[] = $key;
-                $value_types .= $t;
-            }
-        }
-
-        // Find number of appendix keys
-        $aknum = substr_count($appendix, "?");
-        if ($aknum > 0) {
-            switch (gettype($appendixkey)) {
-                case "integer":
-                    $t = "i";
-                    break;
-                case "string":
-                default:
-                    $t = "s";
-                    break;
-            }
-            for ($i = 0; $i < $aknum; $i++) {
-                $values[] = $appendixkey;
-                $value_types .= $t;
-            }
-        }
-
-        $args[] = &$value_types;
-        for ($i = 0; $i < count($values); $i++)
-            $args[] = &$values[$i];
-
-        $query = $this -> prepare("SELECT $columns FROM $table WHERE $condition $appendix");
-        call_user_func_array(array($query, "bindParam"), $args);
-        $ret = $query -> execute();
-
-        if ($query -> error)
-            throw new \Viper\Core\Model\DB\DBException("DB::search(): wrong query, SQL says: ".$query -> error, $this -> errno);
-
-        // Fetch data
-        return $query -> fetchAll();
-
-    }
 
 
     public function forceUpdate(string $table, array $valuearr, string $condition, array $conditionarr) {
@@ -202,7 +169,7 @@ abstract class SQL extends PDOWrapper
             throw new \Viper\Core\Model\DB\DBException("Too many lines. For an unsafe alternative, use DB::forceX()", 0);
     }
 
-    public function selectall(string $table, string $columns = '*') : array {
+    public function selectall(string $table, string $columns = '*') : ?array {
         return $this -> response("SELECT $columns FROM $table");
     }
 }

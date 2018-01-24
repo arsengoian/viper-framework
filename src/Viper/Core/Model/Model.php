@@ -95,6 +95,17 @@ abstract class Model extends Element {
     }
 
     /**
+     * @param string $query
+     * @param string $key
+     * @return static
+     */
+    public static function search(string $query, string $key) {
+        return static::attempt(function() use ($query, $key) {
+            return parent::search($query, $key);
+        });
+    }
+
+    /**
      * @param string $key
      * @param $value
      * @return Model|null

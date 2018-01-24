@@ -17,7 +17,6 @@ abstract class PDOWrapper extends PDO implements RDBMS
 {
 
     public function preparedStatement(string $preparedQuery, array $values, string $functionName): ?array {
-
         try {
             $query = $this -> prepare($preparedQuery);
         } catch (PDOException $e) {
@@ -54,8 +53,8 @@ abstract class PDOWrapper extends PDO implements RDBMS
     }
 
 
-    protected function fetch(PDOStatement $result) {
-        if ($result -> columnCount() > 0)
+    protected function fetch(PDOStatement $result): ?array {
+        if ($result -> columnCount() != 0)
             return $result -> fetchAll();
         else return NULL;
     }
