@@ -26,9 +26,9 @@ class DataStream extends Collection
     /**
      * @function __construct
      */
-    public function __construct()
+    public function __construct(string $input)
     {
-        $this->input = file_get_contents('php://input');
+        $this->input = $input;
 
         $boundary = $this->boundary();
 

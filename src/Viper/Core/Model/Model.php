@@ -16,6 +16,8 @@ use Viper\Support\IdGenException;
 // TODO add queries
 // TODO fix random order in all()
 
+// TODO convert to semantically correct DBAL
+
 abstract class Model extends Element {
 
     /** @noinspection PhpMissingParentConstructorInspection */
