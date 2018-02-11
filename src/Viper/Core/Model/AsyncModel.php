@@ -108,6 +108,11 @@ abstract class AsyncModel extends Model
         parent::genocide($conditionarr);
     }
 
+    public static function search(string $query, string $key) {
+        // TODO search cache?
+        return parent::search($query, $key);
+    }
+
     public static function getById (string $id): ?Model
     {
         if (($cache = self::cache()) -> hasKey($id))

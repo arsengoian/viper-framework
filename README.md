@@ -93,6 +93,7 @@ All views and parsed .yaml files are recovered, if possible, from cache
 * Viper templating engine
 * Console commands
 * Full Mysql support
+* Full SQL Server support
 * Other SQL dialects support
 * Numerous feature and structure improvements
 

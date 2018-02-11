@@ -6,9 +6,11 @@
  * Time: 19:11
  */
 
-namespace Viper\Core\Model\Types;
+namespace Viper\Core\Model\DB\MySQL\Types;
 
 // TODO Support UNSIGNED
+
+use Viper\Core\Model\DB\Types\SizedType;
 
 class IntegerType extends SizedType
 {

@@ -155,8 +155,15 @@ abstract class App extends Loggable{
         } catch (\Exception $e) {}
     }
 
+
+    public function getRawBody() {
+        return Util::RAM('rawBody', function() {
+            return file_get_contents('php://input');
+        });
+    }
+
     private function fromPHPInput() {
-        parse_str(file_get_contents('php://input'), $ro);
+        parse_str($this -> getRawBody(), $ro);
         if (count($ro) > 0) {
             $this -> params = new DataCollection($ro);
             $this -> files = new DataCollection();
@@ -174,7 +181,10 @@ abstract class App extends Loggable{
             $this -> params = new DataCollection($output);
             $this -> files = new DataCollection();
         } elseif (strpos($this -> getHeader('Content-Type'), 'application/json') !== FALSE) {
-            $this -> params = new DataCollection(json_decode(file_get_contents('php://input'), TRUE));
+            $data = json_decode($this -> getRawBody(), TRUE);
+            if (!is_array($data))
+                throw new ValidationException('JSON not valid: '.$this -> getRawBody());
+            $this -> params = new DataCollection($data);
             $this -> files = new DataCollection();
         } elseif ($this -> getMethod() == 'POST') {
             if (strpos($this -> getHeader('Content-Type'), 'multipart/form-data') !== FALSE) {
@@ -185,7 +195,7 @@ abstract class App extends Loggable{
             }
         } else {
             if (strpos($this -> getHeader('Content-Type'), 'multipart/form-data') !== FALSE) {
-                $stream = new DataStream();
+                $stream = new DataStream($this -> getRawBody());
                 $this -> params = $stream['post'] ?? new DataCollection();
                 $this -> files = $stream['files'] ?? new DataCollection();
 

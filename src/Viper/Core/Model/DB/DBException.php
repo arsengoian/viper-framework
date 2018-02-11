@@ -6,14 +6,14 @@
  * Time: 12:59
  */
 
-namespace Viper\Support;
+namespace Viper\Core\Model\DB;
 
 
 use Viper\Core\StringCodeException;
 use PDOException;
 use Throwable;
 
-class MysqlDBException extends PDOException implements StringCodeException
+class DBException extends PDOException implements StringCodeException
 {
     private $PDOCode;
 

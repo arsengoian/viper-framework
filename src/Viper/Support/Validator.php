@@ -85,7 +85,7 @@ class Validator
     public function inArray (string $key, array $haystack, ?string $varname = NULL): ?string {
         return $this -> validate($key, $varname, function($key) use ($haystack) {
             return in_array($key, $haystack);
-        },"%n must be contained in array $haystack");
+        },"%n must be one of: ".implode(', ', $haystack));
     }
 
 

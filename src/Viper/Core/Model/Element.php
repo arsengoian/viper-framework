@@ -8,7 +8,8 @@
 
 namespace Viper\Core\Model;
 
-use Viper\Support\MysqlDBException;
+use Viper\Core\Model\DB\DB;
+use Viper\Core\Model\DB\DBException;
 use Viper\Support\Libs\Util;
 use Viper\Support\ValidationException;
 
@@ -29,7 +30,7 @@ abstract class Element extends DBObject
     final public static function attempt(callable $do) {
         try {
             return $do();
-        } catch (MysqlDBException|ValidationException|ModelException $e) {
+        } catch (DBException|ValidationException|ModelException $e) {
             return self::modelConfig() -> testTable($e, $do);
         }
     }
@@ -41,7 +42,7 @@ abstract class Element extends DBObject
             $data = Util::fromYaml(ROOT.'/models/'.$cln.'.yaml');
             if (!$data)
                 throw new ModelException('Model config not found');
-            $config = new ModelConfig($data, $cln);
+            $config = DB::modelConfig($data, $cln);
             $GLOBALS['__model__'.$cln] = $config;
             return $config;
         });
