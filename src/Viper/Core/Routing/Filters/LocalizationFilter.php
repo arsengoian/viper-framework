@@ -10,12 +10,21 @@ namespace Viper\Core\Routing\Filters;
 
 
 use Viper\Core\Filter;
+use Viper\Core\Localization;
 
+
+/**
+ * Class LocalizationFilter
+ * Localizes the application
+ * Extend this filter to allow/disallow routes
+ * @package LocalizationFilter
+ */
 class LocalizationFilter extends Filter
 {
 
     public function proceed ()
     {
-        // TODO: Implement proceed() method.
+        (new Localization($this -> app())) -> init();
     }
+
 }
