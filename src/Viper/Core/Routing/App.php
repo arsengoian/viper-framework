@@ -14,7 +14,6 @@ use Viper\Support\ValidationException;
 use Viper\Support\Libs\DataStream;
 use Viper\Support\Writer;
 
-// TODO Add helpers
 
 // TODO Finish Viper to support foreach, while and switch
 
@@ -25,8 +24,6 @@ use Viper\Support\Writer;
 // TODO logs not logging errors =(
 
 // TODO add async requests from ReactPHP
-
-// TODO allow filter to skip if route added
 
 // TODO implement sessions
 
