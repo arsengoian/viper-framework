@@ -34,6 +34,8 @@ use Viper\Support\Writer;
 
 // TODO add support for regexp to routing
 
+// TODO custom models deployment
+
 
 abstract class App extends Loggable{
 

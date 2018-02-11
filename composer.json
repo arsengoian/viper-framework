@@ -12,7 +12,10 @@
   "autoload": {
     "psr-4" : {
       "Viper\\" : "src/Viper"
-    }
+    },
+    "files": [
+      "src/support.php"
+    ]
   },
   "minimum-stability": "dev",
   "require": {
