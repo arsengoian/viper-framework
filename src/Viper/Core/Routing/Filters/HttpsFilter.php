@@ -13,6 +13,11 @@ use Viper\Core\Config;
 use Viper\Core\Filter;
 use Viper\Core\View;
 
+/**
+ * Class HttpsFilter
+ * Use to redirect non-HTTPS requests to HTTPS
+ * @package Viper\Core\Routing\Filters
+ */
 class HttpsFilter extends Filter
 {
 

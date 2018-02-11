@@ -17,13 +17,22 @@ use Viper\Support\Writer;
 // TODO Add helpers
 
 // TODO Finish Viper to support foreach, while and switch
-// TODO add Viper cache
 
 // TODO add daemon routing
 
-// TODO add data to be added to all views
+// TODO implement data propagation for viper
 
 // TODO logs not logging errors =(
+
+// TODO add async requests from ReactPHP
+
+// TODO allow filter to skip if route added
+
+// TODO implement sessions
+
+// TODO replace ROOT constant
+
+// TODO add support for regexp to routing
 
 
 abstract class App extends Loggable{
@@ -64,7 +73,8 @@ abstract class App extends Loggable{
         $filters = $this -> declareSystemFilters() -> merge($this -> declareFilters());
         foreach ($filters as $filterName) {
              $filter = $this -> filter($filterName);
-             $filter -> proceed();
+             if (!$filter -> isToSkip())
+                $filter -> proceed();
         }
 
         $this -> systemOnLoad();
@@ -277,7 +287,8 @@ abstract class App extends Loggable{
         $filters = $this -> declareDyingFilters() -> merge($this -> declareSystemDyingFilters());
         foreach ($filters as $filterName) {
             $filter = $this -> filter($filterName);
-            $filter -> proceed();
+            if (!$filter -> isToSkip())
+                $filter -> proceed();
         }
     }
 

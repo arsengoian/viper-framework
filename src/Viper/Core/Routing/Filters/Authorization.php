@@ -16,6 +16,6 @@ class Authorization extends Filter
 
     public function proceed ()
     {
-        // TODO: Implement proceed() method.
+        // TODO: check settings for access
     }
 }
