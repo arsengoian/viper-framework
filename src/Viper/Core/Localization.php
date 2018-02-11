@@ -436,8 +436,11 @@ class Localization
 
         // Choose random string from array
         if (is_array($node))
-            return $node[rand(0, count($node) - 1)];
-        return $node;
+            $val = array_values($node)[rand(0, count($node) - 1)];
+        else $val = $node;
+        if (!is_string($val))
+            throw new ValidationException("$str is not string");
+        return $val;
     }
 
 
