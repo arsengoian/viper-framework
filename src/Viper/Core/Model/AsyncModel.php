@@ -126,7 +126,6 @@ abstract class AsyncModel extends Model
         $model = new static(['id' => $valuearr['id']], $valuearr -> toArray());
         $cached = new CachedModel($model, TRUE);
         self::cache()[$valuearr['id']] = $cached;
-
         return $model;
     }
 

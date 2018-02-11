@@ -143,6 +143,8 @@ class Util
     }
 
     public static function fromYaml(string $file): array {
+        if (!file_exists($file))
+            throw new UtilException('File missing: '.$file);
         return self::cache($file, file_get_contents($file), 'yaml', function($data) use ($file) {
             return (new Yaml()) -> load($file);
         });

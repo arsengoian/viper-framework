@@ -11,6 +11,7 @@ namespace Viper\Core\Model;
 use Viper\Core\Model\DB\DB;
 use Viper\Core\Model\DB\DBException;
 use Viper\Support\Libs\Util;
+use Viper\Support\Libs\UtilException;
 use Viper\Support\ValidationException;
 
 abstract class Element extends DBObject
@@ -27,6 +28,12 @@ abstract class Element extends DBObject
         return static::class;
     }
 
+    // To override
+    public static function customYAML(): ?string {
+        return NULL;
+    }
+
+
     final public static function attempt(callable $do) {
         try {
             return $do();
@@ -35,18 +42,42 @@ abstract class Element extends DBObject
         }
     }
 
+
+
+
+    private static function customYamlFile(string $cln) {
+        return ROOT.DIRECTORY_SEPARATOR.'storage'.DIRECTORY_SEPARATOR.'models'.DIRECTORY_SEPARATOR.$cln.'.yaml';
+    }
+
+    final public static function checkCustomYAML() {
+        if ($yaml = static::customYAML()) {
+            $cln = Util::explodeLast('\\', static::modelName());
+            $file = self::customYamlFile($cln);
+            if (!file_exists($file) || file_get_contents($file) != $yaml)
+                Util::put($file, $yaml);
+        }
+    }
+
+
     final public static function modelConfig(): ModelConfig {
-        $cln = self::modelName();
+        $cln = static::modelName();
         return Util::RAM('model__'.$cln, function () use($cln): ModelConfig {
             $cln = Util::explodeLast('\\', $cln);
-            $data = Util::fromYaml(ROOT.'/models/'.$cln.'.yaml');
-            if (!$data)
+            try {
+                if (static::customYAML()) {
+                    $data = Util::fromYaml(self::customYamlFile($cln));
+                } else {
+                    $data = Util::fromYaml(ROOT.DIRECTORY_SEPARATOR.'models'.DIRECTORY_SEPARATOR.$cln.'.yaml');
+                }
+            } catch (UtilException $e) {
                 throw new ModelException('Model config not found');
+            }
             $config = DB::modelConfig($data, $cln);
             $GLOBALS['__model__'.$cln] = $config;
             return $config;
         });
     }
+
 
     final protected static function table() : string {
         return self::modelConfig() -> getTable();
