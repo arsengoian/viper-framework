@@ -21,8 +21,6 @@ use Viper\Support\Writer;
 
 // TODO implement data propagation for viper
 
-// TODO logs not logging errors =(
-
 // TODO add async requests from ReactPHP
 
 // TODO implement sessions
@@ -127,7 +125,7 @@ abstract class App extends Loggable{
             $_response["trace"] = $exc -> getTrace();
         }
         if (Config::get('DEBUG') === TRUE && $prettyprint || Config::get('PRETTY_PRINT') === TRUE)
-            echo '<pre>' && print_r($_response) && die();
+            echo '<pre>' && print_r($_response);
         else echo json_encode($_response);
         try {
             $l = new DaemonLogger(ROOT.'/logs/error.log');
@@ -145,7 +143,7 @@ abstract class App extends Loggable{
             $_response["file"] = $errfile;
         }
         if (Config::get('DEBUG') === TRUE && Config::get('PRETTY_PRINT') === TRUE)
-            echo '<pre>' && print_r($_response) && die();
+            echo '<pre>' && print_r($_response);
         else echo json_encode($_response);
         try {
             $l = new DaemonLogger(ROOT.'/logs/error.log');
