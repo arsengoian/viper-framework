@@ -10,12 +10,19 @@ use Viper\Core\Config;
 use Viper\Core\Localization;
 use Viper\Core\Model\DB\DB;
 use Viper\Core\Model\DB\RDBMS;
+use Viper\Core\RedirectView;
+use Viper\Core\TextView;
 use Viper\Core\View;
 use Viper\Support\Libs\Util;
 
 if (!function_exists('lang')) {
     function lang(string $string): string {
         return Localization::lang($string);
+    }
+}
+if (!function_exists('url')) {
+    function url(string $url): string {
+        return Localization::localizedURL($url);
     }
 }
 if (!function_exists('getLocale')) {
@@ -28,11 +35,23 @@ if (!function_exists('config')) {
         return Config::get($key);
     }
 }
+
 if (!function_exists('view')) {
-    function view(string $view, array $data): View {
+    function view(string $view, array $data = []): View {
         return new View($view, $data);
     }
 }
+if (!function_exists('redirect')) {
+    function redirect(string $redirect): RedirectView {
+        return new RedirectView($redirect);
+    }
+}
+if (!function_exists('stub')) {
+    function stub() {
+        return new TextView();
+    }
+}
+
 if (!function_exists('db')) {
     function db(): RDBMS {
         return DB::instance();

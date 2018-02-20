@@ -419,8 +419,21 @@ class Localization
     }
 
 
-    private static function findByLang(string $str, string $lang): string {
-        $leaves = array_merge([$lang], explode('/', $str));
+    private static function findByLang(string $str, string $lang, string $module = NULL): string {
+        // Support both / and .
+        $allPieces = [];
+        $pieces = explode('/', $str);
+        foreach ($pieces as $piece) {
+            $chunks = explode('.', $piece);
+            if ($chunks)
+                $allPieces = array_merge($allPieces, $chunks);
+        }
+
+        if ($module)
+            $leaves = array_merge([$lang, $module], $allPieces);
+        else
+            $leaves = array_merge([$lang], $allPieces);
+
         $node = self::$strings;
         $passedLeaves = [];
         foreach ($leaves as $leaf) {
@@ -454,12 +467,27 @@ class Localization
         }
 
         try {
-            return self::findByLang($str, $loc);
+            try {
+                return self::findByLang($str, $loc);
+            } catch (ValidationException $e) {
+                if ($module = config('DEFAULT_LOCALE_MODULE'))
+                    return self::findByLang($str, $loc, $module);
+                else throw $e;
+            }
         } catch (ValidationException $e) {
             $dat = self::lang($str, ++$locale);
             if ($dat)
                 return $dat;
             else throw $e;
         }
+    }
+
+    /**
+     * @param string $url With or without '/'
+     * @return string With '/' (absolute URL)
+     */
+    public static function localizedURL(string $url): string {
+        $url = preg_replace('/\/*(.*)/', '$1', $url);
+        return ($loc = self::getLocale()) == self::$supported[0] ? '/'.$url : '/'.$loc.'/'.$url;
     }
 }

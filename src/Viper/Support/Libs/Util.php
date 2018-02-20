@@ -80,27 +80,29 @@ class Util
             chmod($file, 0777);
     }
 
+    // Warning! Ignoring warnings
     public static function recursiveMkdir(string $dir, int $loops = 0) {
         if ($loops > 20)
             throw new UtilException('No more than 20 directories in a row');
         if(!file_exists($newdir = dirname($dir)))
             self::recursiveMkdir($newdir);
-        mkdir($dir);
-        chmod($dir, 0777);
+        @mkdir($dir);
+        @chmod($dir, 0777);
     }
-
+    
+    // Warning! Ignoring warnings
     public static function recursiveRmdir($dir) {
         if (!file_exists($dir))
             return true;
         if (!is_dir($dir))
-            return unlink($dir);
+            return @unlink($dir);
         foreach (scandir($dir) as $item) {
             if ($item == '.' || $item == '..')
                 continue;
             if (!self::recursiveRmdir($dir . DIRECTORY_SEPARATOR . $item))
                 return false;
         }
-        return rmdir($dir);
+        return @rmdir($dir);
     }
 
 
