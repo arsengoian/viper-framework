@@ -103,7 +103,7 @@ class Router
             throw new RoutingException('No such controller');
 
         // Auxillary pseudo-controllers
-        if (Config::get('DEBUG') == "Yes" && Util::contains($compatible_name,'Debug')) {
+        if (Config::get('DEBUG') === TRUE && Util::contains($compatible_name,'Debug')) {
             if (file_exists(ROOT.'/debug.php'))
                 require ROOT . 'debug.php';
             else throw new HttpException(404);
