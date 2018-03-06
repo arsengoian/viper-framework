@@ -10,6 +10,7 @@ namespace Viper\Core\Routing;
 
 // TODO add support for '/' routes
 
+use Viper\Core\AppLogicException;
 use Viper\Core\Config;
 use Viper\Core\Routing\Methods\Method;
 use Viper\Support\Libs\Util;
@@ -20,7 +21,10 @@ class Router
     private const CONTROLLERS_NAMESPACE = 'App\\Controllers\\';
 
     private $app;
-    private $routes;
+    private $routes = [];
+
+    private static $customRouteRegistrationOpen = TRUE;
+    private static $customRoutes = [];
 
     function __construct(App $app) {
         $this -> app = $app;
@@ -29,8 +33,15 @@ class Router
         else $this -> routes = [];
     }
 
+    public static function registerCustomRoute(string $routeKey, string $routeValue) {
+        if (!self::$customRouteRegistrationOpen)
+            throw new AppLogicException('Cannot register route in this point in app. Register in App onLoad method');
+        self::$customRoutes[$routeKey] = $routeValue;
+    }
+
 
     public function exec() {
+        self::$customRouteRegistrationOpen = FALSE;
 
         $app = $this -> app;
 
@@ -43,8 +54,10 @@ class Router
             $action = 'get';
         }
 
-        if (array_key_exists($controller_name, $this -> routes)) {
-            $element = $this -> routes[$controller_name];
+        $routes = $this -> routes + self::$customRoutes;
+
+        if (array_key_exists($controller_name, $routes)) {
+            $element = $routes[$controller_name];
             if (is_array($element)) {
                 if (array_key_exists($action, $element)) {
                     $ret = $this -> adaptData($element[$action], $action, $controller_name);
