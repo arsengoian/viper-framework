@@ -173,7 +173,7 @@ abstract class DBObject extends Collection {
         DB::instance() -> insert(static::table(), $vals);
         try {
             foreach ($vals as $key => $val)
-                if (!$val)
+                if (!$val || is_object($val))
                     unset($vals[$key]);
             return static::construct($vals);
         } catch (DBException $e) {
