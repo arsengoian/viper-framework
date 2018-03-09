@@ -13,7 +13,7 @@ use Viper\Support\Libs\Util;
 use ArrayIterator;
 use Traversable;
 
-class Collection implements \ArrayAccess, \Serializable, \IteratorAggregate {
+class Collection implements \ArrayAccess, \Serializable, \IteratorAggregate, \Countable {
 
     protected $data;
     private $position = 0;
@@ -35,6 +35,15 @@ class Collection implements \ArrayAccess, \Serializable, \IteratorAggregate {
     public function toArray() {
         return $this -> data;
     }
+
+
+    // Countable interface
+
+    public function count ()
+    {
+        return count($this -> data);
+    }
+
 
 
     /**
