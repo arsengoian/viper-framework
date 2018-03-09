@@ -11,7 +11,7 @@ namespace Viper\Core\Model\DB\MySQL\Types;
 
 use Viper\Core\Model\DB\Types\Type;
 use Viper\Support\ValidationException;
-use Jessengers\Date\Date;
+use Jenssengers\Date\Date;
 use InvalidArgumentException;
 
 class DateType extends Type
