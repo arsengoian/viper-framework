@@ -30,7 +30,12 @@ abstract class DBObject extends Collection {
 
     function __construct(array $condition, array $local_data = NULL) {
         $this -> validateConstants();
+
+        foreach ($condition as $key => $val)  // TODO make correct representation for date type
+            if (!$val || is_object($val))
+                unset($condition[$key]);
         $this -> condition = $condition;
+
         if (!$local_data) {
             $data = DB::instance() -> find(static::table(), implode(',', static::columns()), $this -> condition);
             $this -> validateDataArr($data, $condition);
