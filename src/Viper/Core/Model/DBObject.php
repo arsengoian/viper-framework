@@ -160,7 +160,7 @@ abstract class DBObject extends Collection {
     }
 
     public static function genocide(array $conditionarr) {
-        DB::instance() -> findDelete(static::table(), $conditionarr);
+        DB::instance() -> findForceDelete(static::table(), $conditionarr);
     }
 
 
@@ -177,13 +177,17 @@ abstract class DBObject extends Collection {
         }
         DB::instance() -> insert(static::table(), $vals);
         try {
-            foreach ($vals as $key => $val)
+            foreach ($vals as $key => $val) { // TODO standardize this checks! This is crutchy
                 if (!$val || is_object($val))
                     unset($vals[$key]);
+                if (is_float($val) || (is_string($val) && $val == (string)(float)$val)) // string contains a float
+                    unset($vals[$key]);
+            }
             return static::construct($vals);
         } catch (DBException $e) {
             return NULL;
         }
+
     }
 
 }

@@ -146,10 +146,15 @@ abstract class SQL extends PDOWrapper
         return $this -> forceDelete($table, $condition, []);
     }
 
-    public function findDelete(string $table, array $conditionarr) {
-        $condition = $this -> preparedCondition($conditionarr);
-        $this -> testOneFind($table, $conditionarr);
-        return $this -> forceDelete($table, $condition, array_values($conditionarr));
+    public function findForceDelete (string $table, array $conditionArr) {
+        $condition = $this -> preparedCondition($conditionArr);
+        return $this -> forceDelete($table, $condition, array_values($conditionArr));
+    }
+
+
+    public function findDelete(string $table, array $conditionArr) {
+        $this -> testOneFind($table, $conditionArr);
+        $this -> findForceDelete($table, $conditionArr);
     }
 
 
