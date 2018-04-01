@@ -67,7 +67,7 @@ class View extends Viper implements Viewable {
 
     public static function parseException(\Throwable $e): string {
         // build error view
-        if (Config::get('DEBUG') == 'Yes' || Config::get('REPORT_ERRORS') == 'Yes') {
+        if (Config::get('DEBUG') === TRUE || Config::get('REPORT_ERRORS') === TRUE) {
 
             try {
 

@@ -120,6 +120,13 @@ interface RDBMS
      * @param array $conditionArr
      * @return mixed
      */
+    public function findForceDelete(string $table, array $conditionArr);
+
+    /**
+     * @param string $table
+     * @param array $conditionArr
+     * @return mixed
+     */
     public function findDelete(string $table, array $conditionArr);
 
 

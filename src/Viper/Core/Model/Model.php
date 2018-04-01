@@ -38,10 +38,10 @@ abstract class Model extends Element {
     
     // TODO TODO add more of these: search
 
-    public static function all(string $key = NULL, string $value = NULL): Collection {
+    public static function all(string $key = NULL, ?string $value = NULL): Collection {
         return static::attempt(function () use ($key, $value): Collection {
             $db = DB::instance();
-            if ($key || $value == 0)
+            if ($key === NULL)
                 $dat = $db -> selectall(static::table());
             else $dat = $db -> find(static::table(), implode(',', static::columns()), [$key => $value]);
             $objarr = new Collection();
@@ -52,6 +52,8 @@ abstract class Model extends Element {
             return $objarr;
         });
     }
+
+    // TODO find
 
 
 

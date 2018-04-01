@@ -35,8 +35,7 @@ class DaemonLogger implements Writer {
     }
 
     private function writ($msg) {
-        if (Config::get('DEBUG') == 'allowed')
-            fwrite($this -> log, $msg."\n");
+        fwrite($this -> log, $msg."\n");
     }
 
     public function newline() {
@@ -48,8 +47,7 @@ class DaemonLogger implements Writer {
     }
 
     public function append(string $msg) {
-        if (Config::get('DEBUG') == 'allowed')
-            fwrite($this -> log, $msg);
+        fwrite($this -> log, $msg);
     }
 
     public function dump($var) {

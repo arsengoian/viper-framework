@@ -23,7 +23,7 @@ class HttpsFilter extends Filter
 
     public function proceed ()
     {
-        if (Config::get('REQUIRE_HTTPS') == "Yes") {
+        if (Config::get('REQUIRE_HTTPS') === TRUE) {
             if (!$this -> app() -> getEnv("HTTPS")) {
                 View::redirect('https://'.Config::get('DOMAIN').$this -> app() -> getEnv("REQUEST_URI"));
             }

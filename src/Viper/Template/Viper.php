@@ -53,14 +53,14 @@ class Viper extends Interpreter {
 
 
 	public function debugTokenize() {
-		if (Config::get('DEBUG') == 'Yes') {
+		if (Config::get('DEBUG')) {
 			$tokens = $this -> tokenize($this -> raw);
 			self::debugPrintTokens($tokens, TRUE);
 		}
 	}
 
 	public static function debugPrintTokens(Collection $tokens, bool $full = FALSE) {
-		if (Config::get('DEBUG') == 'Yes') {
+		if (Config::get('DEBUG')) {
 			$class = new \ReflectionClass('Viper\Template\Tokenizer');
 			$consts = $class -> getConstants();
 			foreach ($tokens as $t) {

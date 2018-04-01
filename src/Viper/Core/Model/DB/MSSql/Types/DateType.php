@@ -22,7 +22,7 @@ namespace Viper\Core\Model\DB\MSSql\Types;
 
 use Viper\Core\Model\DB\Types\Type;
 use Viper\Support\ValidationException;
-use Jessengers\Date\Date;
+use Jenssegers\Date\Date;
 use InvalidArgumentException;
 
 //    datetime	From January 1, 1753 to December 31, 9999 with an accuracy of 3.33 milliseconds	8 bytes

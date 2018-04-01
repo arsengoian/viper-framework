@@ -10,17 +10,32 @@ namespace Viper\Core\Routing;
 
 // TODO add support for '/' routes
 
+use Viper\Core\AppLogicException;
 use Viper\Core\Config;
 use Viper\Core\Routing\Methods\Method;
 use Viper\Support\Libs\Util;
 use Viper\Core\Viewable;
 
+/**
+ * Class Router
+ * Priority:
+ * 1. Routes in files
+ * 2. Custom routes
+ * 3. Custom route classes
+ * 4. Fallback on controller name
+ * 5. Fallback on default controller
+ * @package Viper\Core\Routing
+ */
 class Router
 {
     private const CONTROLLERS_NAMESPACE = 'App\\Controllers\\';
 
     private $app;
-    private $routes;
+    private $routes = [];
+
+    private static $customRouteRegistrationOpen = TRUE;
+    private static $customRoutes = [];
+    private static $customRouteClasses = [];
 
     function __construct(App $app) {
         $this -> app = $app;
@@ -30,7 +45,27 @@ class Router
     }
 
 
+    private static function checkRegisterAvailability() {
+        if (!self::$customRouteRegistrationOpen)
+            throw new AppLogicException('Cannot register route in this point in app. Register in App onLoad method');
+    }
+
+    public static function registerCustomRoute(string $routeKey, string $routeValue) {
+        self::checkRegisterAvailability();
+        self::$customRoutes[$routeKey] = $routeValue;
+    }
+
+    // Can't set custom actions. Only parsable from URL
+    public static function registerCustomRouteClass(string $routeKey, string $routeClass) {
+        self::checkRegisterAvailability();
+        if (!class_exists($routeClass))
+            throw new AppLogicException('Class '.$routeClass.' does not exist');
+        self::$customRouteClasses[$routeKey] = $routeClass;
+    }
+
+
     public function exec() {
+        self::$customRouteRegistrationOpen = FALSE;
 
         $app = $this -> app;
 
@@ -43,8 +78,11 @@ class Router
             $action = 'get';
         }
 
-        if (array_key_exists($controller_name, $this -> routes)) {
-            $element = $this -> routes[$controller_name];
+        $routes = self::$customRoutes + $this -> routes;
+
+        if (array_key_exists($controller_name, $routes)) {
+
+            $element = $routes[$controller_name];
             if (is_array($element)) {
                 if (array_key_exists($action, $element)) {
                     $ret = $this -> adaptData($element[$action], $action, $controller_name);
@@ -54,12 +92,21 @@ class Router
             }
             $action = $ret[0];
             $controller_name = $ret[1];
+            $controller_name = self::CONTROLLERS_NAMESPACE.$controller_name;
+
+        } elseif (array_key_exists($controller_name, self::$customRouteClasses)) {
+
+            $controller_name = self::$customRouteClasses[$controller_name];
+
         } else {
+
             if (!$controller_name)
                 $controller_name = Config::get('DEFAULT_CONTROLLER');
             $controller_name = ucfirst(strtolower($controller_name)).'Controller';
+            $controller_name = self::CONTROLLERS_NAMESPACE.$controller_name;
+
         }
-        $controller_name = self::CONTROLLERS_NAMESPACE.$controller_name;
+
 
         if ($action == $app -> routeSegment(0))
             $this -> app -> routeShift(); // Shifting only now because earlier we weren't sure that the method exists
@@ -95,19 +142,16 @@ class Router
     public function runAction(string $controller_name, string $action): ?Viewable {
 
         App::log('request', 'New request: '.$controller_name.' '.$action);
-
-        $compatible_name = str_replace('App\Controllers', 'app\Controllers', $controller_name);
-        $compatible_name = str_replace('\\', DIRECTORY_SEPARATOR, $compatible_name);
-
-        if (!file_exists(ROOT.DIRECTORY_SEPARATOR."$compatible_name.php"))
-            throw new RoutingException('No such controller');
+        
+        if (!class_exists($controller_name))
+            throw new HttpException(404,'No such controller');
 
         // Auxillary pseudo-controllers
-        if (Config::get('DEBUG') == "Yes" && Util::contains($compatible_name,'Debug')) {
+        if (Config::get('DEBUG') === TRUE && Util::contains($controller_name,'Debug')) {
             if (file_exists(ROOT.'/debug.php'))
                 require ROOT . 'debug.php';
             else throw new HttpException(404);
-            return new class implements Viewable { public function flush(): string { return ''; } };
+            return stub();
         }
 
         // Check if implements
@@ -119,7 +163,7 @@ class Router
         )) throw new HttpException(501);
 
         if (!method_exists($controller_name, $action))
-            throw new RoutingException('No such method');
+            throw new HttpException(404,'No such method');
 
         $controller = new $controller_name($this -> app);
 

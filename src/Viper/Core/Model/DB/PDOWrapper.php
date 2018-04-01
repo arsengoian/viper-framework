@@ -55,7 +55,7 @@ abstract class PDOWrapper extends PDO implements RDBMS
 
     protected function fetch(PDOStatement $result): ?array {
         if ($result -> columnCount() != 0)
-            return $result -> fetchAll();
+            return $result -> fetchAll(PDO::FETCH_ASSOC);
         else return NULL;
     }
 

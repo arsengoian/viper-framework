@@ -66,7 +66,7 @@ abstract class AsyncModel extends Model
     }
 
 
-    public static function all(string $key = NULL, string $value = NULL): Collection
+    public static function all(string $key = NULL, ?string $value = NULL): Collection
     {
         $all = parent::all($key, $value);
         foreach ($all as $model)
@@ -113,6 +113,10 @@ abstract class AsyncModel extends Model
         return parent::search($query, $key);
     }
 
+    /**
+     * @param string $id
+     * @return static
+     */
     public static function getById (string $id): ?Model
     {
         if (($cache = self::cache()) -> hasKey($id))
