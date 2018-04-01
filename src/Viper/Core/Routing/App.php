@@ -46,7 +46,10 @@ abstract class App extends Loggable{
     private $cookies;
     private $router;
 
-    private $exceptionsDisabledFlag = FALSE;
+    private $flags = [
+        'exceptionsDisabled' => FALSE,
+        'noBuffering' => FALSE,
+    ];
 
     protected abstract function onLoad(): void;
 
@@ -301,13 +304,18 @@ abstract class App extends Loggable{
 
 
     public function disableExceptionHandler() {
-        $this -> exceptionsDisabledFlag = TRUE;
+        $this -> flags['exceptionsDisabled'] = TRUE;
+    }
+
+    public function noBuffering() {
+        $this -> flags['noBuffering'] = TRUE;
     }
 
 
     public function parseResponse() {
 
-        ob_start();
+        if (!$this -> flags['noBuffering'])
+            ob_start();
 
         try {
             $data = $this -> router -> exec();
@@ -323,13 +331,16 @@ abstract class App extends Loggable{
                     echo json_encode($data);
             }
 
-            $size = ob_get_length();
-            header("Content-Length: {$size}");
-            header("Connection: close");
+            if (!$this -> flags['noBuffering']) {
+                $size = ob_get_length();
+                header("Content-Length: {$size}");
+                header("Connection: close");
+            }
+
 
         } catch (\Throwable $exc) {
 
-            if (!$this -> exceptionsDisabledFlag) {
+            if (!$this -> flags['exceptionsDisabled']) {
                 // If not caught earlier
                 try {
                     echo View::parseException($exc);
@@ -341,11 +352,13 @@ abstract class App extends Loggable{
             }
         }
 
-        ob_end_flush();
-        ob_flush();
-        flush();
-        if(session_id()) session_write_close();
-
+        if (!$this -> flags['noBuffering']) {
+            ob_end_flush();
+            ob_flush();
+            flush();
+            if(session_id()) session_write_close();
+        }
+        
         $this -> afterFlushTasks();
 
     }

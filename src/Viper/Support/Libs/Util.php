@@ -71,11 +71,11 @@ class Util
         };
     }
 
-    public static function put(string $file, string $content) {
+    public static function put(string $file, string $content, int $FPCflags = 0) {
         if (!file_exists($dir = dirname($file)))
             self::recursiveMkdir($dir);
         $ex = file_exists($file);
-        file_put_contents($file, $content);
+        file_put_contents($file, $content, $FPCflags);
         if (!$ex)
             chmod($file, 0777);
     }
