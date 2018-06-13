@@ -49,4 +49,48 @@ class Application extends App
     {
         return new FilterCollection([]);
     }
+
+
+
+
+    public static function run() {
+        (new static()) -> parseResponse();
+    }
+
+
+
+
+
+    private static function getCliArgs(string $cName = NULL, string $action = NULL): array {
+        $argv = $_SERVER['argv'];
+        array_shift($argv);
+
+        $thisargs = [];
+        foreach ([$cName, $action] as $v)
+            if ($v)
+                $thisargs[] = $v;
+
+        $args = array_merge($thisargs, $argv);
+
+        if (count($args) < 2)
+            throw new \Exception('At least a controller name and an action required');
+
+        return $args;
+    }
+
+
+
+    public static function cliRun(string $cName = NULL, string $action = NULL) {
+        $app = new static();
+
+        $args = self::getCliArgs($cName, $action);
+        $cn = array_shift($args);
+        $a = array_shift($args);
+
+        $app -> route = $args;
+
+        $app -> router -> CLIrunAction($cn, $a, $args);
+
+        $app -> afterFlushTasks();
+    }
 }

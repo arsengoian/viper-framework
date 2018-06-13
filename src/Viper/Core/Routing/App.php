@@ -35,8 +35,7 @@ use Viper\Support\Writer;
 
 
 abstract class App extends Loggable{
-
-    private $route;
+    
     private $params;
     private $files;
     private $headers;
@@ -44,7 +43,9 @@ abstract class App extends Loggable{
     private $env;
     private $session;
     private $cookies;
-    private $router;
+
+    protected $route;
+    protected $router;
 
     private $flags = [
         'exceptionsDisabled' => FALSE,
@@ -87,8 +88,10 @@ abstract class App extends Loggable{
         $path = isset($_GET['path']) ? $_GET['path'] : '';
         $this -> route = explode('/', $path);
 
-        $this -> headers = getallheaders();
-        $this -> method = $_SERVER['REQUEST_METHOD'];
+        if (function_exists('getallheaders'))
+            $this -> headers = getallheaders();
+        else $this -> headers = [];
+        $this -> method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 
         $this -> setupParams();
 
@@ -177,7 +180,7 @@ abstract class App extends Loggable{
         // Weird bug with "para" param
         if ($this -> getMethod() == 'GET') {
             $output = [];
-            parse_str($_SERVER['QUERY_STRING'], $output);
+            parse_str($_SERVER['QUERY_STRING'] ?? '', $output);
             $this -> params = new DataCollection($output);
             $this -> files = new DataCollection();
         } elseif (strpos($this -> getHeader('Content-Type'), 'application/json') !== FALSE) {
@@ -285,7 +288,7 @@ abstract class App extends Loggable{
         return $this -> session[$k];
     }
 
-    private function afterFlushTasks() {
+    final protected function afterFlushTasks() {
         $filters = $this -> declareDyingFilters() -> merge($this -> declareSystemDyingFilters());
         foreach ($filters as $filterName) {
             $filter = $this -> filter($filterName);
