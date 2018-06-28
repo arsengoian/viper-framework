@@ -28,13 +28,23 @@ class MysqlDB extends SQL {
 
     function __construct () {
         try {
-            parent::__construct(
-                "mysql:host=".Config::get('DB_HOST').
+            if (func_num_args() == 5) {
+                call_user_func('parent::__construct',
+                    "mysql:host=".func_get_args()[0].
+                    ";dbname=".func_get_args()[1].
+                    ";charset=".func_get_args()[2],
+                    func_get_args()[3],
+                    func_get_args()[4]
+                );
+            } else {
+                parent::__construct(
+                    "mysql:host=".Config::get('DB_HOST').
                     ";dbname=".Config::get('DB_NAME').
                     ";charset=".Config::get('DB_CHARSET'),
-                Config::get('DB_USER'),
-                Config::get('DB_PASS')
-            );
+                    Config::get('DB_USER'),
+                    Config::get('DB_PASS')
+                );
+            }
             $this -> setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         } catch (PDOException $e) {
             throw new DBException(
