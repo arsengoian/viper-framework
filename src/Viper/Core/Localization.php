@@ -357,7 +357,7 @@ class Localization
 
 
     private function setupStrings(): void {
-        if (!is_dir($dir = ROOT.DIRECTORY_SEPARATOR.'strings'))
+        if (!is_dir($dir = root().DIRECTORY_SEPARATOR.'strings'))
             Util::recursiveMkdir($dir);
 
         $dirIterator = new RecursiveDirectoryIterator($dir);

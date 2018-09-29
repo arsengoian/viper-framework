@@ -134,7 +134,7 @@ abstract class App extends Loggable{
             echo '<pre>' && print_r($_response);
         else echo json_encode($_response);
         try {
-            $l = new DaemonLogger(ROOT.'/logs/error.log');
+            $l = new DaemonLogger(root().'/logs/error.log');
             $l -> write("Error occured\n");
             $l -> dump($exc);
         } catch (\Exception $e) {}
@@ -152,7 +152,7 @@ abstract class App extends Loggable{
             echo '<pre>' && print_r($_response);
         else echo json_encode($_response);
         try {
-            $l = new DaemonLogger(ROOT.'/logs/error.log');
+            $l = new DaemonLogger(root().'/logs/error.log');
             $l -> write("Error occured\n");
             $l -> dump($_response);
         } catch (\Exception $e) {}

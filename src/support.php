@@ -15,6 +15,11 @@ use Viper\Core\TextView;
 use Viper\Core\View;
 use Viper\Support\Libs\Util;
 
+if (!function_exists('root')) {
+    function root(): string {
+        return dirname(__FILE__, 5);
+    }
+}
 if (!function_exists('lang')) {
     function lang(string $string): string {
         return Localization::lang($string);

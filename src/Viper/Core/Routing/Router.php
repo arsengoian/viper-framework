@@ -39,7 +39,7 @@ class Router
 
     function __construct(App $app) {
         $this -> app = $app;
-        if (file_exists($file = ROOT.'/routes/'.strtolower($app -> getMethod()).'.yaml'))
+        if (file_exists($file = root().'/routes/'.strtolower($app -> getMethod()).'.yaml'))
             $this -> routes = Util::fromYaml($file);
         else $this -> routes = [];
     }
@@ -172,8 +172,8 @@ class Router
 
         // Auxillary pseudo-controllers
         if ($this -> isDebugRequest($controller_name)) {
-            if (file_exists(ROOT.'/debug.php'))
-                require ROOT . 'debug.php';
+            if (file_exists(root().'/debug.php'))
+                require root(). 'debug.php';
             else throw new HttpException(404);
             return stub();
         }

@@ -30,7 +30,7 @@ trait Depictable {
 
 
         $root_dir = '/'.Config::get('ROOT_DIR');
-        $target_filename = ROOT.$root_dir.$dbname;
+        $target_filename = root().$root_dir.$dbname;
         $dir = dirname($target_filename);
         if (!file_exists($dir))
             Util::recursiveMkdir($dir);

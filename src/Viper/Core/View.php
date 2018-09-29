@@ -18,12 +18,12 @@ class View extends Viper implements Viewable {
     function __construct(string $viewname, array $data = []) {
 
         $this -> viewname = $viewname;
-        $master_page = ROOT.'/views/'.Config::get('MASTER_LAYOUT').'.viper';
+        $master_page = root().'/views/'.Config::get('MASTER_LAYOUT').'.viper';
         if (!file_exists($master_page))
             throw new HttpException(404, 'Master layout missing');
 
-        $this -> own_folder = ROOT."/views/$viewname";
-        $this -> default_folder = ROOT.'/views/'.ucfirst(Config::get('DEFAULT_CONTROLLER'));
+        $this -> own_folder = root()."/views/$viewname";
+        $this -> default_folder = root().'/views/'.ucfirst(Config::get('DEFAULT_CONTROLLER'));
 
         parent::__construct($master_page, $data);
 
@@ -71,7 +71,7 @@ class View extends Viper implements Viewable {
 
             try {
 
-                if (is_dir(ROOT.'/views/'.Config::get('ERROR_VIEW'))) {
+                if (is_dir(root().'/views/'.Config::get('ERROR_VIEW'))) {
 
                     if (in_array('ob_gzhandler', ob_list_handlers())) {
                         ob_clean(); // TODO bugs on hosting  ? Test

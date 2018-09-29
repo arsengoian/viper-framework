@@ -18,7 +18,7 @@ abstract class QueueRouter extends Router implements Queue
     private $index;
     private $iterator;
 
-    const STORAGE = ROOT.'/storage/daemon/queue/';
+    const STORAGE = root().'/storage/daemon/queue/'; // TODO
     const ONES_PER_TIME = 1;
 
     public function __construct($id)
