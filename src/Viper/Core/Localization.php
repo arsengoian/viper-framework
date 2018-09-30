@@ -419,7 +419,7 @@ class Localization
     }
 
 
-    private static function findByLang(string $str, string $lang, string $module = NULL): string {
+    private static function findByLang(string $str, string $lang, bool $whole, string $module = NULL) {
         // Support both / and .
         $allPieces = [];
         $pieces = explode('/', $str);
@@ -447,9 +447,12 @@ class Localization
             $passedLeaves[] = $leaf;
         }
 
-        // Choose random string from array
+        // To return all tree structure
+        if ($whole)
+            return $node;
+
         if (is_array($node))
-            $val = array_values($node)[rand(0, count($node) - 1)];
+            $val = array_values($node)[rand(0, count($node) - 1)]; // Choose random string from array
         else $val = $node;
         if (!is_string($val))
             throw new ValidationException("$str is not string");
@@ -457,7 +460,7 @@ class Localization
     }
 
 
-    public static function lang(string $str, int $locale = -1): string {
+    public static function lang(string $str, int $locale = -1, bool $getWhole = FALSE) {
         if ($locale == -1)
             $loc = self::getLocale();
         else {
@@ -468,14 +471,14 @@ class Localization
 
         try {
             try {
-                return self::findByLang($str, $loc);
+                return self::findByLang($str, $loc, $getWhole);
             } catch (ValidationException $e) {
                 if ($module = config('DEFAULT_LOCALE_MODULE'))
-                    return self::findByLang($str, $loc, $module);
+                    return self::findByLang($str, $loc, $getWhole, $module);
                 else throw $e;
             }
         } catch (ValidationException $e) {
-            $dat = self::lang($str, ++$locale);
+            $dat = self::lang($str, ++$locale, $getWhole);
             if ($dat)
                 return $dat;
             else throw $e;
