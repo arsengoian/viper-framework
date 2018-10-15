@@ -11,11 +11,8 @@ namespace Viper\Core\Model;
 
 use Viper\Core\AppLogicException;
 use Viper\Core\StringCodeException;
+use Viper\Core\StringCodeLogicException;
 
-class ModelException extends AppLogicException implements StringCodeException {
+class ModelException extends StringCodeLogicException {
 
-    public function getStringCode ()
-    {
-        return (string) $this -> getCode();
-    }
 }

@@ -459,6 +459,16 @@ class Localization
         return $val;
     }
 
+    public static function byLang(string $str, string $langCode, bool $getWhole = FALSE) {
+        try {
+            return self::findByLang($str, $langCode, $getWhole);
+        } catch (ValidationException $e) {
+            if ($module = config('DEFAULT_LOCALE_MODULE'))
+                return self::findByLang($str, $langCode, $getWhole, $module);
+            else throw $e;
+        }
+    }
+
 
     public static function lang(string $str, int $locale = -1, bool $getWhole = FALSE) {
         if ($locale == -1)
@@ -468,15 +478,8 @@ class Localization
                 return FALSE;
             $loc = self::$supported[$locale];
         }
-
         try {
-            try {
-                return self::findByLang($str, $loc, $getWhole);
-            } catch (ValidationException $e) {
-                if ($module = config('DEFAULT_LOCALE_MODULE'))
-                    return self::findByLang($str, $loc, $getWhole, $module);
-                else throw $e;
-            }
+            return self::byLang($str, $loc, $getWhole);
         } catch (ValidationException $e) {
             $dat = self::lang($str, ++$locale, $getWhole);
             if ($dat)

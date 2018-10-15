@@ -59,4 +59,23 @@ class GoogleMaps
 
         return $places;
     }
+
+
+
+    public static function staticMap(
+        Location $location,
+        string $color = 'red',
+        string $label = 'place',
+        string $zoom = '13'
+    ) {
+        $key = config('Google.STATIC_MAP_API_KEY');
+        return "https://maps.googleapis.com/maps/api/staticmap?&markers=color:$color|label:$label|".
+            "$location->latitude,$location->longitude&zoom=$zoom&scale=1&size=600x300&maptype="
+            ."roadmap&format=png&visual_refresh=true&key=$key";
+    }
+
+
+    public static function url(Location $location): string {
+        return "https://www.google.com/maps/?q=loc:$location->latitude,$location->longitude";
+    }
 }

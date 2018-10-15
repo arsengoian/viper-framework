@@ -50,6 +50,7 @@ abstract class App extends Loggable{
     private $flags = [
         'exceptionsDisabled' => FALSE,
         'noBuffering' => FALSE,
+        'contentEncodingNone' => FALSE,
     ];
 
     protected abstract function onLoad(): void;
@@ -314,6 +315,10 @@ abstract class App extends Loggable{
         $this -> flags['noBuffering'] = TRUE;
     }
 
+    public function contentEncodingNone() {
+        $this -> flags['contentEncodingNone'] = TRUE;
+    }
+
 
     public function parseResponse() {
 
@@ -336,8 +341,10 @@ abstract class App extends Loggable{
 
             if (!$this -> flags['noBuffering']) {
                 $size = ob_get_length();
-                header("Content-Length: {$size}");
+                header("Content-Length: $size");
                 header("Connection: close");
+                if ($this -> flags['contentEncodingNone'])
+                    header("Content-encoding: none");
             }
 
 

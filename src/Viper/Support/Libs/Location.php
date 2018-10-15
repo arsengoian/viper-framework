@@ -29,6 +29,12 @@ class Location
         }
     }
 
+    /**
+     * @param string $lat
+     * @param string $long
+     * @return Location
+     * @throws StringCodeLogicException
+     */
     public static function fromCoordinates(string $lat, string $long): Location {
         $loc = new Location();
         $loc -> latitude = $lat;

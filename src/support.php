@@ -21,8 +21,17 @@ if (!function_exists('root')) {
     }
 }
 if (!function_exists('lang')) {
-    function lang(string $string): string {
+    function lang(string $string, string $locale = NULL): string {
+        if ($locale)
+            return Localization::byLang($string, $locale);
         return Localization::lang($string);
+    }
+}
+if (!function_exists('langArray')) {
+    function langArray(string $string, string $locale = NULL): array {
+        if ($locale)
+            return Localization::byLang($string, $locale, TRUE);
+        return Localization::lang($string, -1, TRUE);
     }
 }
 if (!function_exists('url')) {
@@ -65,5 +74,15 @@ if (!function_exists('db')) {
 if (!function_exists('util')) {
     function util(string $func, ...$args) {
         call_user_func_array([Util::class, $func], $args);
+    }
+}
+if (!function_exists('base64url_encode')) {
+    function base64url_encode(string $argument) {
+        return urlencode(base64_encode($argument));
+    }
+}
+if (!function_exists('base64url_decode')) {
+    function base64url_decode(string $argument) {
+        return base64_decode(urldecode($argument));
     }
 }
