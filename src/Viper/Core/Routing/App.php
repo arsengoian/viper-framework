@@ -85,7 +85,7 @@ abstract class App extends Loggable{
 
     private function setupVars() {
         $path = isset($_GET['path']) ? $_GET['path'] : '';
-        $this -> route = explode('/', $path);
+        $this -> setRoute($path);
 
         $this -> headers = getallheaders();
         $this -> method = $_SERVER['REQUEST_METHOD'];
@@ -251,6 +251,13 @@ abstract class App extends Loggable{
     }
 
 
+    public function setRoute(string $route) {
+        $this -> route = explode('/', $route);
+    }
+
+    public function getRouter(): Router {
+        return $this -> router;
+    }
 
     public function routeSegment(int $num): ?string {
         if (isset($this -> route[$num]))
