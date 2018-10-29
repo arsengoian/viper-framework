@@ -35,8 +35,7 @@ use Viper\Support\Writer;
 
 
 abstract class App extends Loggable{
-
-    private $route;
+    
     private $params;
     private $files;
     private $headers;
@@ -44,11 +43,14 @@ abstract class App extends Loggable{
     private $env;
     private $session;
     private $cookies;
-    private $router;
+
+    protected $route;
+    protected $router;
 
     private $flags = [
         'exceptionsDisabled' => FALSE,
         'noBuffering' => FALSE,
+        'contentEncodingNone' => FALSE,
     ];
 
     protected abstract function onLoad(): void;
@@ -87,8 +89,10 @@ abstract class App extends Loggable{
         $path = isset($_GET['path']) ? $_GET['path'] : '';
         $this -> setRoute($path);
 
-        $this -> headers = getallheaders();
-        $this -> method = $_SERVER['REQUEST_METHOD'];
+        if (function_exists('getallheaders'))
+            $this -> headers = getallheaders();
+        else $this -> headers = [];
+        $this -> method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 
         $this -> setupParams();
 
@@ -131,7 +135,7 @@ abstract class App extends Loggable{
             echo '<pre>' && print_r($_response);
         else echo json_encode($_response);
         try {
-            $l = new DaemonLogger(ROOT.'/logs/error.log');
+            $l = new DaemonLogger(root().'/logs/error.log');
             $l -> write("Error occured\n");
             $l -> dump($exc);
         } catch (\Exception $e) {}
@@ -149,7 +153,7 @@ abstract class App extends Loggable{
             echo '<pre>' && print_r($_response);
         else echo json_encode($_response);
         try {
-            $l = new DaemonLogger(ROOT.'/logs/error.log');
+            $l = new DaemonLogger(root().'/logs/error.log');
             $l -> write("Error occured\n");
             $l -> dump($_response);
         } catch (\Exception $e) {}
@@ -177,7 +181,7 @@ abstract class App extends Loggable{
         // Weird bug with "para" param
         if ($this -> getMethod() == 'GET') {
             $output = [];
-            parse_str($_SERVER['QUERY_STRING'], $output);
+            parse_str($_SERVER['QUERY_STRING'] ?? '', $output);
             $this -> params = new DataCollection($output);
             $this -> files = new DataCollection();
         } elseif (strpos($this -> getHeader('Content-Type'), 'application/json') !== FALSE) {
@@ -292,7 +296,7 @@ abstract class App extends Loggable{
         return $this -> session[$k];
     }
 
-    private function afterFlushTasks() {
+    final protected function afterFlushTasks() {
         $filters = $this -> declareDyingFilters() -> merge($this -> declareSystemDyingFilters());
         foreach ($filters as $filterName) {
             $filter = $this -> filter($filterName);
@@ -318,6 +322,10 @@ abstract class App extends Loggable{
         $this -> flags['noBuffering'] = TRUE;
     }
 
+    public function contentEncodingNone() {
+        $this -> flags['contentEncodingNone'] = TRUE;
+    }
+
 
     public function parseResponse() {
 
@@ -340,8 +348,10 @@ abstract class App extends Loggable{
 
             if (!$this -> flags['noBuffering']) {
                 $size = ob_get_length();
-                header("Content-Length: {$size}");
+                header("Content-Length: $size");
                 header("Connection: close");
+                if ($this -> flags['contentEncodingNone'])
+                    header("Content-encoding: none");
             }
 
 

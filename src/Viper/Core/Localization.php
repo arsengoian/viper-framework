@@ -357,7 +357,7 @@ class Localization
 
 
     private function setupStrings(): void {
-        if (!is_dir($dir = ROOT.DIRECTORY_SEPARATOR.'strings'))
+        if (!is_dir($dir = root().DIRECTORY_SEPARATOR.'strings'))
             Util::recursiveMkdir($dir);
 
         $dirIterator = new RecursiveDirectoryIterator($dir);
@@ -419,7 +419,7 @@ class Localization
     }
 
 
-    private static function findByLang(string $str, string $lang, string $module = NULL): string {
+    private static function findByLang(string $str, string $lang, bool $whole, string $module = NULL) {
         // Support both / and .
         $allPieces = [];
         $pieces = explode('/', $str);
@@ -447,17 +447,30 @@ class Localization
             $passedLeaves[] = $leaf;
         }
 
-        // Choose random string from array
+        // To return all tree structure
+        if ($whole)
+            return $node;
+
         if (is_array($node))
-            $val = array_values($node)[rand(0, count($node) - 1)];
+            $val = array_values($node)[rand(0, count($node) - 1)]; // Choose random string from array
         else $val = $node;
         if (!is_string($val))
             throw new ValidationException("$str is not string");
         return $val;
     }
 
+    public static function byLang(string $str, string $langCode, bool $getWhole = FALSE) {
+        try {
+            return self::findByLang($str, $langCode, $getWhole);
+        } catch (ValidationException $e) {
+            if ($module = config('DEFAULT_LOCALE_MODULE'))
+                return self::findByLang($str, $langCode, $getWhole, $module);
+            else throw $e;
+        }
+    }
 
-    public static function lang(string $str, int $locale = -1): string {
+
+    public static function lang(string $str, int $locale = -1, bool $getWhole = FALSE) {
         if ($locale == -1)
             $loc = self::getLocale();
         else {
@@ -465,17 +478,10 @@ class Localization
                 return FALSE;
             $loc = self::$supported[$locale];
         }
-
         try {
-            try {
-                return self::findByLang($str, $loc);
-            } catch (ValidationException $e) {
-                if ($module = config('DEFAULT_LOCALE_MODULE'))
-                    return self::findByLang($str, $loc, $module);
-                else throw $e;
-            }
+            return self::byLang($str, $loc, $getWhole);
         } catch (ValidationException $e) {
-            $dat = self::lang($str, ++$locale);
+            $dat = self::lang($str, ++$locale, $getWhole);
             if ($dat)
                 return $dat;
             else throw $e;

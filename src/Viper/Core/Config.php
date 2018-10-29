@@ -26,7 +26,7 @@ class Config {
 
     // TODO parse not all configs (because it's taking too much time). Find a more efficient yaml parser
     public static function parsePreferences() {
-        foreach (new GlobIterator(ROOT.DIRECTORY_SEPARATOR.'config'.DIRECTORY_SEPARATOR.'*.yaml') as $file) {
+        foreach (new GlobIterator(root().DIRECTORY_SEPARATOR.'config'.DIRECTORY_SEPARATOR.'*.yaml') as $file) {
             $filechunks = explode(DIRECTORY_SEPARATOR,(string)$file);
             $chunk = array_pop($filechunks);
             if ($chunk == 'local.yaml' || $chunk == 'global.yaml')

@@ -37,7 +37,7 @@ class Loggable
     public static function log(string $key, string $string) {
         $logger = Util::RAM('logger.'.$key, function() use($key) {
             if (Config::get('DEBUG')) {
-                return new DaemonLogger(ROOT.'/logs/'.$key.'.log');
+                return new DaemonLogger(root().'/logs/'.$key.'.log');
             } else {
                 return self::dummyLogger();
             }

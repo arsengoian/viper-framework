@@ -14,8 +14,8 @@ use Viper\Support\Util;
 
 class DaemonHistorian implements Chronicle
 {
-    private const LOGS_FOLDER = ROOT.'/storage/daemon/logs/';
-    private const DAEMON_STORAGE = ROOT.'/storage/daemon/';
+    private const LOGS_FOLDER = root().'/storage/daemon/logs/'; // TODO
+    private const DAEMON_STORAGE = root().'/storage/daemon/'; // TODO
 
     private $file;
     private $succFile;

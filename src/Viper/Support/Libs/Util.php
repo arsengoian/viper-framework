@@ -169,7 +169,7 @@ class Util
         if ($unserialize && (new ReflectionFunction($unserialize)) -> getNumberOfParameters() != 1)
             throw new UtilException('Serialize must have one data parameter');
 
-        $dir = ROOT.'/storage/cache/'.$namespace.'/'.md5($key);
+        $dir = root().'/storage/cache/'.$namespace.'/'.md5($key);
         $file = $dir.'/'.md5($dataKey).'.cache';
         if (file_exists($file)) {
 
@@ -193,6 +193,6 @@ class Util
     }
 
     public static function clearCache(string $namespace) {
-        return self::recursiveRmdir(ROOT.'/storage/cache/'.$namespace);
+        return self::recursiveRmdir(root().'/storage/cache/'.$namespace);
     }
 }

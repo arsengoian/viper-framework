@@ -39,7 +39,7 @@ class Router
 
     function __construct(App $app) {
         $this -> app = $app;
-        if (file_exists($file = ROOT.'/routes/'.strtolower($app -> getMethod()).'.yaml'))
+        if (file_exists($file = root().'/routes/'.strtolower($app -> getMethod()).'.yaml'))
             $this -> routes = Util::fromYaml($file);
         else $this -> routes = [];
     }
@@ -139,35 +139,59 @@ class Router
 
 
 
+
+
+    private function isDebugRequest(string $controller_name): bool {
+        return Config::get('DEBUG') === TRUE && Util::contains($controller_name,'Debug');
+    }
+
+    
+    public function validateController(string $controller_name, string $action) {
+        if (!class_exists($controller_name))
+            throw new HttpException(404,'No such controller');
+
+        // Check if implements
+        if (!$this -> isDebugRequest($controller_name)) {
+            $poppy = explode('\\',Method::class);
+            array_pop($poppy);
+            if (!in_array(
+                implode('\\', array_merge($poppy, [$this -> app -> getMethod()])),
+                class_implements($controller_name)
+            )) throw new HttpException(501);
+
+            if (!method_exists($controller_name, $action))
+                throw new HttpException(404,'No such method');
+        }
+    }
+
     public function runAction(string $controller_name, string $action): ?Viewable {
 
         App::log('request', 'New request: '.$controller_name.' '.$action);
         
-        if (!class_exists($controller_name))
-            throw new HttpException(404,'No such controller');
+        $this -> validateController($controller_name, $action);
 
         // Auxillary pseudo-controllers
-        if (Config::get('DEBUG') === TRUE && Util::contains($controller_name,'Debug')) {
-            if (file_exists(ROOT.'/debug.php'))
-                require ROOT . 'debug.php';
+        if ($this -> isDebugRequest($controller_name)) {
+            if (file_exists(root().'/debug.php'))
+                require root(). 'debug.php';
             else throw new HttpException(404);
             return stub();
         }
-
-        // Check if implements
-        $poppy = explode('\\',Method::class);
-        array_pop($poppy);
-        if (!in_array(
-            implode('\\', array_merge($poppy, [$this -> app -> getMethod()])),
-            class_implements($controller_name)
-        )) throw new HttpException(501);
-
-        if (!method_exists($controller_name, $action))
-            throw new HttpException(404,'No such method');
 
         $controller = new $controller_name($this -> app);
 
         return call_user_func_array([$controller, $action], $this -> app -> routeSegments());
 
+    }
+    
+    
+    public function CLIrunAction(string $controller_name, string $action, array $args) {
+        $controller_name = ucfirst(strtolower($controller_name)).'Controller';
+        $controller_name = self::CONTROLLERS_NAMESPACE.$controller_name;
+
+        $controller = new $controller_name($this -> app);
+
+        $content = call_user_func_array([$controller, $action], $this -> app -> routeSegments());
+        echo $content -> flush();
     }
 }

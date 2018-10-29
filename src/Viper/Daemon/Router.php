@@ -55,7 +55,7 @@ abstract class Router extends DaemonHistorian implements Daemon
         $segments = explode('\\', $thisclass);
         $thiscname = array_pop($segments);
         str_replace('Router.php', "$thiscname.php", $thisfile);
-        $bootstrap = ROOT.'/bootstrap.php';
+        $bootstrap = root().'/bootstrap.php';
         $thisid = $this -> getName();
 
         $this -> storage['id'] = $this -> platform -> newProcess($sleep, "

@@ -46,7 +46,7 @@ abstract class Element extends DBObject
 
 
     private static function customYamlFile(string $cln) {
-        return ROOT.DIRECTORY_SEPARATOR.'storage'.DIRECTORY_SEPARATOR.'models'.DIRECTORY_SEPARATOR.$cln.'.yaml';
+        return root().DIRECTORY_SEPARATOR.'storage'.DIRECTORY_SEPARATOR.'models'.DIRECTORY_SEPARATOR.$cln.'.yaml';
     }
 
     final public static function checkCustomYAML() {
@@ -67,7 +67,7 @@ abstract class Element extends DBObject
                 if (static::customYAML()) {
                     $data = Util::fromYaml(self::customYamlFile($cln));
                 } else {
-                    $data = Util::fromYaml(ROOT.DIRECTORY_SEPARATOR.'models'.DIRECTORY_SEPARATOR.$cln.'.yaml');
+                    $data = Util::fromYaml(root().DIRECTORY_SEPARATOR.'models'.DIRECTORY_SEPARATOR.$cln.'.yaml');
                 }
             } catch (UtilException $e) {
                 throw new ModelException('Model config not found');
