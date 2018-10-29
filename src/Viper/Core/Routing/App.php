@@ -256,6 +256,8 @@ abstract class App extends Loggable{
 
 
     public function setRoute(string $route) {
+        if ($route[0] == '/')
+            $route = substr($route, 1);
         $this -> route = explode('/', $route);
     }
 
