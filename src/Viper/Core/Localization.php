@@ -20,7 +20,7 @@ use Viper\Support\ValidationException;
 
 class Localization
 {
-    // From LaravelLocalization
+    // Stolen from LaravelLocalization
     private const LOCALES = [
         'ace'         => ['name' => 'Achinese',                'native' => 'Aceh', 'regional' => ''],
         'af'          => ['name' => 'Afrikaans',               'native' => 'Afrikaans', 'regional' => 'af_ZA'],
@@ -315,7 +315,7 @@ class Localization
 
 
     private static $strings = [];
-    private static $current = 'en_US';
+    private static $current = 'en';
     private static $supported = [];
 
 
@@ -331,7 +331,7 @@ class Localization
     }
 
 
-    final public function init() {
+    final public static function staticInit() {
         self::$supported = explode(',', Config::get('APP_LOCALES'));
         foreach (self::$supported as &$item) {
             $item = trim($item);
@@ -339,11 +339,15 @@ class Localization
                 throw new ValidationException('Locale not supported: '.$item);
         }
 
+        self::setupStrings();
+    }
+
+    final public function init() {
+        self::staticInit();
+
         self::$current = self::$supported[0];
         if (Config::get('AUTO_LOCALE'))
             $this -> autoLocalize();
-
-        $this -> setupStrings();
     }
 
 
@@ -356,7 +360,7 @@ class Localization
     }
 
 
-    private function setupStrings(): void {
+    private static function setupStrings(): void {
         if (!is_dir($dir = root().DIRECTORY_SEPARATOR.'strings'))
             Util::recursiveMkdir($dir);
 
@@ -372,12 +376,12 @@ class Localization
             $chunks[count($chunks) - 1] = str_replace('.yaml', '', $chunks[count($chunks) - 1]);
             array_push($chunks, $yaml);
 
-            self::$strings = $this -> recursiveMerge($chunks, self::$strings);
+            self::$strings = self::recursiveMerge($chunks, self::$strings);
         }
     }
 
 
-    private function recursiveMerge(array $chunks, array $subject) {
+    private static function recursiveMerge(array $chunks, array $subject) {
         if (count($chunks) == 0)
             return [];
         $leaf = array_shift($chunks);
@@ -385,11 +389,12 @@ class Localization
         if (is_string($leaf)) {
             if (!isset($subject[$leaf]))
                 $subject[$leaf] = [];
-            $subject[$leaf] = array_merge($subject[$leaf], $this -> recursiveMerge($chunks, $subject[$leaf]));
+            $subject[$leaf] = array_merge($subject[$leaf], self::recursiveMerge($chunks, $subject[$leaf]));
             return $subject;
         } elseif (count($chunks) == 0) {
             return array_merge_recursive($leaf, $subject);
         }
+        return [];
     }
 
 

@@ -11,6 +11,16 @@ class DaemonLogger implements Writer {
     private $clock;
     private $file;
 
+    // Testing
+    private static $disabled = FALSE;
+    public static function disable() {
+        self::$disabled = TRUE;
+    }
+
+    public static function enable() {
+        self::$disabled = FALSE;
+    }
+
     function __construct($file) {
 
         $this -> file = $file;
@@ -35,7 +45,8 @@ class DaemonLogger implements Writer {
     }
 
     private function writ($msg) {
-        fwrite($this -> log, $msg."\n");
+        if (!self::$disabled)
+            fwrite($this -> log, $msg."\n");
     }
 
     public function newline() {
@@ -47,7 +58,8 @@ class DaemonLogger implements Writer {
     }
 
     public function append(string $msg) {
-        fwrite($this -> log, $msg);
+        if (!self::$disabled)
+            fwrite($this -> log, $msg);
     }
 
     public function dump($var) {

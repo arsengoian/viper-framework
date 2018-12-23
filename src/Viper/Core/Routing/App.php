@@ -107,7 +107,7 @@ abstract class App extends Loggable{
         return new $name($this);
     }
 
-    public static function phpConfig() {
+    public static function initConfig() {
         Config::parsePreferences();
 
         if (Config::get('DEBUG') === TRUE) {
@@ -116,6 +116,10 @@ abstract class App extends Loggable{
 
         setlocale(LC_CTYPE, "en_US.utf8");
         date_default_timezone_set(Config::get('DEFAULT_TIMEZONE') ??'Europe/Kiev');
+    }
+
+    public static function phpConfig() {
+        self::initConfig();
 
         set_exception_handler(static::class.'::handler');
         set_error_handler(static::class.'::errhandler');
