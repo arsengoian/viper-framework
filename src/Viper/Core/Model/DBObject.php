@@ -167,6 +167,7 @@ abstract class DBObject extends Collection {
     /**
      * @param Collection $valuearr
      * @return static
+     * @throws DBObjectException
      */
     protected static function add(Collection $valuearr): ?Model {
         $vals = [];

@@ -330,7 +330,6 @@ class Localization
         $this->app = $app;
     }
 
-
     final public static function staticInit() {
         self::$supported = explode(',', Config::get('APP_LOCALES'));
         foreach (self::$supported as &$item) {
@@ -361,6 +360,8 @@ class Localization
 
 
     private static function setupStrings(): void {
+        self::$strings = [];
+
         if (!is_dir($dir = root().DIRECTORY_SEPARATOR.'strings'))
             Util::recursiveMkdir($dir);
 

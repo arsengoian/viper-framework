@@ -70,7 +70,9 @@ class StringType extends SizedType
      */
     public function reverseConvert ($value)
     {
-        return (string) $value;
+        if ($value === NULL)
+            return NULL;
+        return $value;
     }
 
 

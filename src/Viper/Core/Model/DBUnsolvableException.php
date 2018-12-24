@@ -14,8 +14,20 @@ use Viper\Core\AppLogicError;
 
 class DBUnsolvableException extends AppLogicError
 {
+    public $previous;
+
     public function __construct (StringCodeException $e)
     {
-        parent::__construct($e -> getMessage(), $e -> getCode(), $e -> getPrevious());
+        $this -> previous = $e;
+
+        $error = $e -> getMessage().", file: {$e->getFile()}, line: {$e->getLine()}";
+        if ($sC = $e -> getStringCode())
+            $error .= ", string code: $sC";
+
+        parent::__construct(
+            $error,
+            $e -> getCode(),
+            $e -> getPrevious()
+        );
     }
 }

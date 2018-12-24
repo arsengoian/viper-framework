@@ -121,7 +121,7 @@ abstract class ModelConfig extends DBTableStructure
         // Check type
         $type -> validate($value);
 
-        if ($fld -> getNotNull() && $value == NULL)
+        if ($fld -> getNotNull() && $value === NULL)
             throw new ValidationException($field.' cannot be NULL');
 
         $this -> validateChecks($field, $value);
@@ -239,7 +239,7 @@ abstract class ModelConfig extends DBTableStructure
     private function sanitizeColumns() {
         foreach ($this -> getTableStructure() as $column) {
             if (!in_array($column['Field'], $this -> getColumns()))
-                $this -> dropColumn($column);
+                $this -> dropColumn($column['Field']);
         }
     }
     // TODO implement command-line interface daemon for these

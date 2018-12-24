@@ -47,7 +47,7 @@ abstract class PDOWrapper extends PDO implements RDBMS
             $query -> execute();
             return $this -> fetch($query);
         } catch (PDOException $e) {
-            throw new DBException("DB::insert(): wrong query, SQL says: ".$e -> getMessage(), $this -> ec($e));
+            throw new DBException("$functionName: wrong query, SQL says: ".$e -> getMessage(), $this -> ec($e));
         }
 
     }
