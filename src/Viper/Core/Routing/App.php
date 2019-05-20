@@ -371,7 +371,7 @@ abstract class App extends Loggable{
                 // If not caught earlier
                 try {
                     echo View::parseException($exc);
-                } catch (\Exception $e) {
+                } catch (\Throwable $e) {
                     echo App::handler($exc, isset($this -> params['prettyprint']));
                 }
             } else {
@@ -381,7 +381,8 @@ abstract class App extends Loggable{
 
         if (!$this -> flags['noBuffering']) {
             ob_end_flush();
-            ob_flush();
+            if (ob_get_level() > 0)
+                ob_flush();
             flush();
             if(session_id()) session_write_close();
         }

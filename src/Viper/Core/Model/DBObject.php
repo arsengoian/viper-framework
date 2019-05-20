@@ -19,6 +19,7 @@ abstract class DBObject extends Collection {
 
     abstract protected static function table() : string;
     abstract protected static function columns() : array;
+    abstract protected static function queryColumns() : array;
     abstract protected static function idSpace() : int;
 
     private static function validateDataArr(&$data, array $condition) {
@@ -37,7 +38,7 @@ abstract class DBObject extends Collection {
         $this -> condition = $condition;
 
         if (!$local_data) {
-            $data = DB::instance() -> find(static::table(), implode(',', static::columns()), $this -> condition);
+            $data = DB::instance() -> find(static::table(), implode(',', static::queryColumns()), $this -> condition);
             $this -> validateDataArr($data, $condition);
             parent::__construct($data[0]);
         } else {
@@ -77,7 +78,7 @@ abstract class DBObject extends Collection {
     }
 
     public static function search(string $query, string $key) {
-        $data = DB::instance() -> search(static::table(),implode(',', static::columns()), $query, $key);
+        $data = DB::instance() -> search(static::table(),implode(',', static::queryColumns()), $query, $key);
         $condition = ['id', $data[0]['id']];
         self::validateDataArr($data, $condition);
         return new static($condition, $data[0]);
@@ -151,7 +152,7 @@ abstract class DBObject extends Collection {
 
 
     final public function updateFields() {
-        $this -> data = DB::instance() -> find(static::table(), implode(',', static::columns()), $this -> condition);
+        $this -> data = DB::instance() -> find(static::table(), implode(',', static::queryColumns()), $this -> condition);
     }
 
 

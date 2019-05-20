@@ -70,7 +70,7 @@ abstract class SQL extends PDOWrapper
     private function preparedCondition($valuearr): string {
         $conds = [];
         foreach ($valuearr as $k => $value)
-            $conds[] = "$k=?";
+            $conds[] = "`$k`=?";
         return implode(' AND ', $conds);
     }
 
@@ -110,7 +110,7 @@ abstract class SQL extends PDOWrapper
 
         $prep_params = [];
         foreach ($valuearr as $k => $value)
-            $prep_params[] = "$k=?";
+            $prep_params[] = "`$k`=?";
         $prep_string = implode(", ", $prep_params);
 
         return $this -> preparedStatement(
