@@ -9,7 +9,8 @@ class DD {
         echo "\n\n";
         print_r($var);
         echo "\n";
-        return ob_get_clean();
+        $text = ob_get_clean();
+        return substr($text, 0, 10000); // TODO config max length and cut nicely
     }
 
     public static function dump($var) {

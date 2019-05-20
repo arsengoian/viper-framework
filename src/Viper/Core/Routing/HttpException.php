@@ -57,7 +57,7 @@ class HttpException extends \Exception {
 
         http_response_code($code);
 
-        parent::__construct("$code $e");
+        parent::__construct("$code $e", $code);
     }
 
 }
