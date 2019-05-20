@@ -82,9 +82,16 @@ abstract class Element extends DBObject
     final protected static function table() : string {
         return self::modelConfig() -> getTable();
     }
+    
+    final protected static function queryColumns(): array {
+        return array_map(function($el) {return "`".$el."`";}, self::columns());
+    }
 
     final protected static function columns() : array {
-        return array_merge(['id'], self::modelConfig() -> getColumns());
+        $cols = self::modelConfig() -> getColumns();
+        if (!in_array('id', $cols))
+            $cols = array_merge(['id'], $cols);
+        return $cols;
     }
 
     final protected static function idSpace() : int {

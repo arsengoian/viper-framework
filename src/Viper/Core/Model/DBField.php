@@ -40,13 +40,13 @@ class DBField
         foreach($sqlTypeClasses as $type) {
             $specimen = new $type($this -> text_type);
             /** @noinspection PhpUndefinedMethodInspection */
-            if (in_array($this -> text_type, $specimen -> availableTypes())) {
+            if (in_array(strtoupper($this -> text_type), $specimen -> availableTypes())) {
                 $this -> sql_type = $specimen;
                 break;
             }
         }
         if (!$this -> sql_type)
-            throw new ModelConfigException('Type "'.$this -> sql_type.'" not supported');
+            throw new ModelConfigException('Type "'.$this -> text_type.'" not supported');
 
         if (Util::contains(strtoupper($column), 'DEFAULT'))
             $this -> default_val = preg_replace('/^.+DEFAULT\s+(.*)\s*.*$/i', '$1', $column);

@@ -8,6 +8,7 @@
 
 namespace Viper\Core;
 
+use Jenssegers\Date\Date;
 use Viper\Core\Config;
 use Viper\Core\Routing\App;
 use Viper\Support\Libs\Util;
@@ -62,7 +63,9 @@ class Localization
         'en-AU'       => ['name' => 'Australian English',      'native' => 'Australian English', 'regional' => 'en_AU'],
         'en-GB'       => ['name' => 'British English',         'native' => 'British English', 'regional' => 'en_GB'],
         'en-US'       => ['name' => 'U.S. English',            'native' => 'U.S. English', 'regional' => 'en_US'],
-        'es'          => ['name' => 'Spanish',                 'native' => 'español', 'regional' => 'es_ES'],
+        'es'          => ['name' => 'Spanish',                 'native' => 'Español', 'regional' => 'es_ES'],
+        'es-ES'       => ['name' => 'Castilian Spanish',       'native' => 'Español castellano', 'regional' => 'es_ES'],
+        'es-MX'       => ['name' => 'Maxican Spanish',         'native' => 'Español mexicano', 'regional' => 'es_MX'],
         'eo'          => ['name' => 'Esperanto',               'native' => 'esperanto', 'regional' => ''],
         'eu'          => ['name' => 'Basque',                  'native' => 'euskara', 'regional' => 'eu_ES'],
         'ewo'         => ['name' => 'Ewondo',                  'native' => 'ewondo', 'regional' => ''],
@@ -361,6 +364,14 @@ class Localization
             $this -> app -> routeShift();
         }
     }
+    
+    public static function isSupported(string $locale): bool {
+        return in_array($locale, self::$supported);
+    }
+
+    public static function supportedLocales() {
+        return array_combine($k = self::$supported, array_map(function($locale) {return self::LOCALES[$locale];}, $k));
+    }
 
 
     private static function setupStrings(): void {
@@ -413,6 +424,7 @@ class Localization
         self::$current = $locale;
         if ($regional = self::LOCALES[self::$current]['regional'])
             $locale = $regional;
+        Date::setLocale($locale);
         setlocale(LC_ALL, $locale);
     }
 
