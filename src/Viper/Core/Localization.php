@@ -329,6 +329,10 @@ class Localization
     {
         $this->app = $app;
     }
+    
+    final public static function getDefaultLocale() {
+        return self::$supported[0];
+    }
 
     final public static function staticInit() {
         self::$supported = explode(',', Config::get('APP_LOCALES'));
