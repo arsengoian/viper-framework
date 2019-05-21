@@ -76,6 +76,8 @@ class GoogleMaps
 
 
     public static function url(Location $location): string {
-        return "https://www.google.com/maps/?q=loc:$location->latitude,$location->longitude";
+        $lat = str_replace(',' , '.', $location->latitude);
+        $long = str_replace(',' , '.', $location->longitude);
+        return "https://www.google.com/maps/?q=loc:$lat,$long";
     }
 }
