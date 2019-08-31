@@ -53,6 +53,10 @@ class Config {
         return $GLOBALS['__preferences__'][strtoupper($key)] ?? NULL;
     }
 
+    public static function set(string $key, string $value) {
+        return $GLOBALS['__preferences__'][strtoupper($key)] = $value;
+    }
+
     public static function all() {
         return $GLOBALS['__preferences__'];
     }

@@ -53,6 +53,19 @@ abstract class Model extends Element {
         });
     }
 
+    public static function selectAll(string $query): Collection {
+        return static::attempt(function () use ($query): Collection {
+            $db = DB::instance();
+            $dat = $db -> select(static::table(), implode(',', static::columns()), $query);
+            $objarr = new Collection();
+            foreach ($dat as $local_data) {
+                $ld = new static(['id' => $local_data['id']], $local_data);
+                $objarr[] = $ld;
+            }
+            return $objarr;
+        });
+    }
+
     // TODO find
 
 

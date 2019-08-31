@@ -22,12 +22,13 @@ class Linux implements Platform
      */
     function newProcess(int $sleep, string $phpAction, string $logfile, string $errlogfile) : string
     {
-        $interpreter = PHP_BIN;
+        $interpreter = config('PHP_BIN') ?? 'php';
         return trim(shell_exec("
             nohup bash -c \"
                 while [ true ]
                 do
                     sleep $sleep;
+                    echo Working ...
                     echo \\\" <?php
                         $phpAction
                     \\\" | $interpreter
