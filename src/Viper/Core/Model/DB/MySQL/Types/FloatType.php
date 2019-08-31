@@ -8,34 +8,31 @@
 
 namespace Viper\Core\Model\DB\MySQL\Types;
 
-// TODO Support UNSIGNED
 
 use Viper\Core\Model\DB\Types\SizedType;
 use Viper\Core\Model\ModelConfigException;
 
-class IntegerType extends SizedType
+class FloatType extends SizedType
 {
     const TYPES = [
-      'TINYINT' => 128,
-      'SMALLINT' => 32767,
-      'MEDIUMINT' => 8388608,
-      'INT' => 2147483647,
-      'BIGINT' => 9223372036854775807
+      'FLOAT' => NULL,     // TODO support double float parameter: DOUBLE(size,d)
+      'DOUBLE' => NULL,    // TODO move to separate DoubleType
+      'DECIMAL' => NULL
     ];
 
     /**
      * Checks if the type is correspondent
      * @param $value
-     * @throws ModelConfigException
      */
     public function validate ($value): void
     {
-        $common = self::TYPES[$this -> sqlType];
-        if (!$this -> size)
-            $this -> size = $common;
-        else $this -> size = min($this -> size, $common);
-        $this -> getValidator()::apply('compare', (int) $value, - $this -> size);
-        $this -> getValidator()::apply('compare', (int) $value, $this -> size - 1, FALSE);
+        switch ($this -> sqlType) {
+            case 'FLOAT':
+            case 'DOUBLE':
+            case 'DECIMAL':
+                // Not implemented;
+                break;
+        }
     }
 
     /**
@@ -44,10 +41,10 @@ class IntegerType extends SizedType
      * @return mixed
      * @throws ModelConfigException
      */
-    public function convert ($value): int
+    public function convert ($value): float
     {
         $this -> getValidator()::apply('number', $value);
-        return (int) $value;
+        return (float) $value;
     }
 
     /**

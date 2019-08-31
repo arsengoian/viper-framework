@@ -11,6 +11,7 @@ namespace Viper\Core\Model\DB\MySQL;
 
 use Viper\Core\Model\DB\Common\SQLTable;
 use Viper\Core\Model\DB\MySQL\Types\DateType;
+use Viper\Core\Model\DB\MySQL\Types\FloatType;
 use Viper\Core\Model\DB\MySQL\Types\IntegerType;
 use Viper\Core\Model\DB\MySQL\Types\StringType;
 use Viper\Core\Model\DBField;
@@ -26,6 +27,7 @@ class MysqlDBTableStructure extends SQLTable
         return [
             StringType::class,
             IntegerType::class,
+            FloatType::class,
             DateType::class
         ];
     }

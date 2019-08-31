@@ -10,12 +10,17 @@ namespace Viper\Daemon;
 
 
 use Viper\Support\DaemonLogger;
-use Viper\Support\Util;
+use Viper\Support\Libs\Util;
 
 class DaemonHistorian implements Chronicle
 {
-    private const LOGS_FOLDER = root().'/storage/daemon/logs/'; // TODO
-    private const DAEMON_STORAGE = root().'/storage/daemon/'; // TODO
+    private static function logsFolder() {
+        return root().'/storage/daemon/logs/';
+    }
+
+    private static function daemonStorage() {
+        return root().'/storage/daemon/';
+    }
 
     private $file;
     private $succFile;
@@ -25,9 +30,9 @@ class DaemonHistorian implements Chronicle
 
     function __construct($id)
     {
-        $this -> file = self::DAEMON_STORAGE.$id;
-        $this -> succFile = self::LOGS_FOLDER.$id.'.log';
-        $this -> errFile = self::LOGS_FOLDER.$id.'.error.log';
+        $this -> file = self::daemonStorage().$id;
+        $this -> succFile = self::logsFolder().$id.'.log';
+        $this -> errFile = self::logsFolder().$id.'.error.log';
 
         $this -> logger = new DaemonLogger($this -> succFile);
         $this -> errLogger = new DaemonLogger($this -> errFile);
@@ -96,8 +101,11 @@ class DaemonHistorian implements Chronicle
     function restore() : ?array
     {
         if (file_exists($this -> file))
-            return unserialize(file_get_contents($this -> file));
+            $ret = unserialize(file_get_contents($this -> file));
         else return NULL;
+        if ($ret === FALSE)
+            return NULL;
+        return $ret;
     }
 
     /**

@@ -74,6 +74,15 @@ abstract class AsyncModel extends Model
                 self::cache()[$model['id']] = new CachedModel($model);
         return $all;
     }
+    
+    public static function selectAll (string $query): Collection
+    {
+        $all = parent::selectAll($query); // TODO move to separate function
+        foreach ($all as $model)
+            if (!isset(self::cache()[$model['id']]))
+                self::cache()[$model['id']] = new CachedModel($model);
+        return $all;
+    }
 
     public function get (string $fld)
     {

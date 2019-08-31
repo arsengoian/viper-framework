@@ -47,7 +47,7 @@ abstract class Router extends DaemonHistorian implements Daemon
         if (isset($this -> storage['id']) && $this -> isAlive())
             throw new DaemonException('It\'s alive anyway!');
 
-        $this -> actionLog('Spawning process with frequency '.$sleep);
+        $this -> actionLog('Spawning process with sleep length '.$sleep);
         $this -> actionLog('See shell output.');
 
         $thisfile = __FILE__;
@@ -55,16 +55,16 @@ abstract class Router extends DaemonHistorian implements Daemon
         $segments = explode('\\', $thisclass);
         $thiscname = array_pop($segments);
         str_replace('Router.php', "$thiscname.php", $thisfile);
-        $bootstrap = root().'/bootstrap.php';
+        $bootstrap = root().'/vendor/autoload.php';
         $thisid = $this -> getName();
 
         $this -> storage['id'] = $this -> platform -> newProcess($sleep, "
              require \\\\\\\"$bootstrap\\\\\\\";
-             require \\\\\\\"$thisfile\\\\\\\";
              (new $thisclass(\\\\\\\"$thisid\\\\\\\")) -> exec();
         ", $this -> getSuccFile(), $this -> getErrFile());
 
         $this -> storage['sleep'] = $sleep;
+        $this -> storage['sentenced'] = 'run';
         $this -> store($this -> storage);
         $this -> actionLog('Successful');
     }
@@ -136,7 +136,7 @@ abstract class Router extends DaemonHistorian implements Daemon
     public function processId() : string
     {
         if (!$this -> storage['id'])
-            die("ERROR: The bot is not running\n");
+            die("ERROR: The daemon is not running\n");
         return trim($this -> storage['id']);
     }
 
