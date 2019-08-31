@@ -61,6 +61,7 @@ class Localization
         'guz'         => ['name' => 'Ekegusii',                'native' => 'Ekegusii', 'regional' => ''],
         'en'          => ['name' => 'English',                 'native' => 'English', 'regional' => 'en_GB'],
         'en-AU'       => ['name' => 'Australian English',      'native' => 'Australian English', 'regional' => 'en_AU'],
+        'en-CA'       => ['name' => 'Canadian English',        'native' => 'Canadian English', 'regional' => 'en_CA'],
         'en-GB'       => ['name' => 'British English',         'native' => 'British English', 'regional' => 'en_GB'],
         'en-US'       => ['name' => 'U.S. English',            'native' => 'U.S. English', 'regional' => 'en_US'],
         'es'          => ['name' => 'Spanish',                 'native' => 'Español', 'regional' => 'es_ES'],
@@ -476,9 +477,9 @@ class Localization
         if (is_array($node))
             $val = array_values($node)[rand(0, count($node) - 1)]; // Choose random string from array
         else $val = $node;
-        if (!is_string($val))
-            throw new ValidationException("$str is not string");
-        return $val;
+//        if (!is_string($val))
+//            throw new ValidationException("$str is not string");
+        return (string) $val;
     }
 
     public static function byLang(string $str, string $langCode, bool $getWhole = FALSE) {
@@ -496,6 +497,7 @@ class Localization
         if ($locale == -1)
             $loc = self::getLocale();
         else {
+            // TODO review algorithm
             if (!isset(self::$supported[$locale]))
                 return FALSE;
             $loc = self::$supported[$locale];
