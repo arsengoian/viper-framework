@@ -140,8 +140,12 @@ abstract class App extends Loggable{
         else echo json_encode($_response);
         try {
             $l = new DaemonLogger(root().'/logs/error.log');
-            $l -> write("Error occured\n");
-            $l -> dump($exc);
+            $l -> write("Error occured");
+            $l -> write('');
+            $l -> write($exc -> getMessage());
+            $l -> write($exc -> getFile().", line ".$exc -> getLine());
+            $l -> write('');
+            $l -> write($exc -> getTraceAsString());
         } catch (\Exception $e) {}
         return '';
     }
