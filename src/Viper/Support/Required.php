@@ -16,7 +16,7 @@ class Required extends Validator
             $varname = $key;
         if (!isset($this -> valuearr[$key]) || $this -> valuearr[$key] === NULL)
             throw new ValidationException("$varname required");
-        return $key;
+        return $this -> valuearr[$key];
     }
 
     public function validate($key, ?string $varname, callable $test, string $errtext)
