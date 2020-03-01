@@ -71,6 +71,6 @@ abstract class PDOWrapper extends PDO implements RDBMS
     protected function eC(PDOException $e) {
         if($e -> getCode())
             return $e -> getCode();
-        return $this -> errorInfo()[1];
+        return (string) $this -> errorInfo()[1];
     }
 }
