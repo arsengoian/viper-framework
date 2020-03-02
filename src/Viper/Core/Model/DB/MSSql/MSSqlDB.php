@@ -32,7 +32,7 @@ class MSSqlDB extends SQL
         } catch (PDOException $e) {
             throw new DBException(
                 "Database connection error, SQL says: ".
-                $e -> getMessage(), $this -> ec($e));
+                $e -> getMessage(), $this -> ec($e, false));
         }
     }
 
@@ -47,5 +47,21 @@ class MSSqlDB extends SQL
         $query .= " ( \n".implode(",\n", $rows)."\n); ";
         $query .= 'END;';
         return $this -> response($query);
+    }
+
+    public function insert(string $table, array $valuearr) {
+        // TODO validate structure
+        // TODO link modelConfig to RDBMS (not to element)
+        $arr = [];
+        foreach ($valuearr as $k => $v)
+            if ($k != 'timestamp' && $k != 'createdAt')
+                $arr[$k] = $v;
+
+        $cols = implode(',', array_keys($arr));
+        parent::insert($table, $arr);
+    }
+
+    public function identifierQuote(): string {
+        return '"';
     }
 }

@@ -15,6 +15,8 @@ use Viper\Core\Model\DB\MSSql\Types\DateType;
 use Viper\Core\Model\DB\MSSql\Types\IntegerType;
 use Viper\Core\Model\DB\MSSql\Types\StringType;
 use Viper\Core\Model\DBField;
+use Viper\Core\Routing\Loggable;
+use Viper\Core\StringCodeException;
 use Viper\Support\ValidationException;
 
 
@@ -48,7 +50,8 @@ class MSSqlDBTableStructure extends SQLTable
     private function getQueryLines() {
         foreach ($this -> getColumns() as $column)
             $lines[] = $column.' '.$this -> getField($column) -> getQuery();
-        $lines[] = 'CONSTRAINT pKey_ID PRIMARY KEY (id)';
+        $table = str_replace('-', '_', $this -> getTable());
+        $lines[] = "CONSTRAINT pKey_ID_$table PRIMARY KEY (id)";
         if (isset($this -> constraints['unique']))
             $lines[] = 'CONSTRAINT u_Unique UNIQUE ('.$this -> constraints['unique'].')';
         if (isset($this -> constraints['foreign_key']))
@@ -113,6 +116,11 @@ class MSSqlDBTableStructure extends SQLTable
 
     protected function changeColumn(string $old, DBField $new) {
         if ($this -> overwriteAllowed()) {
+            if ($new->getType() == 'TIMESTAMP') {
+                Loggable::log('notices', 'Cannot update TIMESTAMP column in MSSQL. Skipping');
+                return;
+            }
+
             $table = $this -> getTable();
             $col = $new -> getName();
             $query = $new -> getQuery();
@@ -165,4 +173,19 @@ class MSSqlDBTableStructure extends SQLTable
                         throw new ValidationException("Field $field with value $value failed unique check; class: $className");
         }
     }
+
+    protected function analyzeCode(StringCodeException $e): bool {
+        switch ($e -> getStringCode()) {
+
+            case "42S22":
+            case "42S02":
+                return $this -> tableMissing() && $this -> unknownColumn();
+
+            // TODO which code do missing columns use then???
+
+            default:
+                return $this -> unknownError();
+        }
+    }
+
 }

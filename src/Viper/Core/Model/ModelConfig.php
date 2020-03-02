@@ -150,7 +150,7 @@ abstract class ModelConfig extends DBTableStructure
         try {
             switch (get_class($e)) {
                 case DBException::class:
-                    if ($this -> analyzeMysql($e))
+                    if ($this -> analyzeCode($e))
                         return $retry();
                     else throw new DBUnsolvableException($e);
                     break;
@@ -173,35 +173,48 @@ abstract class ModelConfig extends DBTableStructure
         }
     }
 
-    private function analyzeMysql(StringCodeException $e): bool {
+    protected function analyzeCode(StringCodeException $e): bool {
         switch ($e -> getStringCode()) {
 
-            case "42S22": // Unknown column
-                if ($this -> writeAllowed()) {
-                    $this -> runMigrations();
-                    $this -> createMissingColumns();
-                    return TRUE;
-                } else return FALSE;
+            case "42S22":
+
+                return $this -> unknownColumn();
 
             // Wrong format/constraints
 
-            case "42S02": // Table does not exist
-                if ($this->writeAllowed()) {
-                    try {
-                        $this->createTable();
-                    } catch (DBException $exc) {
-                        if ($exc -> getCode() !== 0)
-                            throw $exc;
-                    }
-                    return TRUE;
-                } else return FALSE;
+            case "42S02":
+                return $this -> tableMissing();
 
             default:
-                if ($this -> overwriteAllowed()) {
-                    $this->checkTableStructure();
-                    return TRUE;
-                } else return FALSE;
+                return $this -> unknownError();
         }
+    }
+
+    protected function unknownColumn() {
+        if ($this -> writeAllowed()) {
+            $this -> runMigrations();
+            $this -> createMissingColumns();
+            return TRUE;
+        } else return FALSE;
+    }
+
+    protected function tableMissing() {
+        if ($this->writeAllowed()) {
+            try {
+                $this->createTable();
+            } catch (DBException $exc) {
+                if ($exc -> getCode() !== 0)
+                    throw $exc;
+            }
+            return TRUE;
+        } else return FALSE;
+    }
+
+    protected function unknownError() {
+        if ($this -> overwriteAllowed()) {
+            $this->checkTableStructure();
+            return TRUE;
+        } else return FALSE;
     }
 
     private function runMigrations() {

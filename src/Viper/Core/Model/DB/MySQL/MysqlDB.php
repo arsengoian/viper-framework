@@ -64,6 +64,9 @@ class MysqlDB extends SQL {
     }
 
 
+    public function identifierQuote(): string {
+        return '`';
+    }
 
 }
 

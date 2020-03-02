@@ -14,6 +14,7 @@ use Viper\Core\Model\DB\PDOWrapper;
 
 abstract class SQL extends PDOWrapper
 {
+    
     public function select(string $table, string $columns = "*", string $condition = "1") : ?array {
         $this -> normalizeSelectVals($columns, $condition);
         return $this -> response("SELECT $columns FROM $table WHERE $condition");
@@ -70,7 +71,7 @@ abstract class SQL extends PDOWrapper
     private function preparedCondition($valuearr): string {
         $conds = [];
         foreach ($valuearr as $k => $value)
-            $conds[] = "`$k`=?";
+            $conds[] = "{$this->identifierQuote()}$k{$this->identifierQuote()}=?";
         return implode(' AND ', $conds);
     }
 
@@ -110,7 +111,7 @@ abstract class SQL extends PDOWrapper
 
         $prep_params = [];
         foreach ($valuearr as $k => $value)
-            $prep_params[] = "`$k`=?";
+            $prep_params[] = "{$this->identifierQuote()}$k{$this->identifierQuote()}=?";
         $prep_string = implode(", ", $prep_params);
 
         return $this -> preparedStatement(
@@ -177,4 +178,5 @@ abstract class SQL extends PDOWrapper
     public function selectall(string $table, string $columns = '*') : ?array {
         return $this -> response("SELECT $columns FROM $table");
     }
+    
 }

@@ -18,7 +18,7 @@ class DBUnsolvableException extends AppLogicError
 
     public function __construct (StringCodeException $e)
     {
-        $this -> previous = $e;
+//        $this -> previous = $e;
 
         $error = $e -> getMessage().", file: {$e->getFile()}, line: {$e->getLine()}";
         if ($sC = $e -> getStringCode())
@@ -26,8 +26,8 @@ class DBUnsolvableException extends AppLogicError
 
         parent::__construct(
             $error,
-            $e -> getCode(),
-            $e -> getPrevious()
+            $e -> getCode()
+//            $e -> getPrevious()
         );
     }
 }

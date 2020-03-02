@@ -71,8 +71,8 @@ class IntegerType extends SizedType
                 if (!$this -> size)
                     $this -> size = $common;
                 else $this -> size = min($this -> size, $common);
-                $this -> getValidator()::apply('compare', $value, - $this -> size);
-                $this -> getValidator()::apply('compare', $value, $this -> size - 1, FALSE);
+                $this -> getValidator()::apply('compare', (int) $value, - $this -> size);
+                $this -> getValidator()::apply('compare', (int) $value, $this -> size - 1, FALSE);
         }
     }
 
@@ -80,6 +80,7 @@ class IntegerType extends SizedType
      * Converts the value to the needed PHP type
      * @param $value
      * @return mixed
+     * @throws \Viper\Core\Model\ModelConfigException
      */
     public function convert ($value): int
     {

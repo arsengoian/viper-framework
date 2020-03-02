@@ -27,6 +27,7 @@ class IdGen {
     ];
 
     private $len;
+    private $key;
     private $current;
     private $p1;
     private $p2;
@@ -39,6 +40,7 @@ class IdGen {
         if (strlen($key) > 63)
             throw new IdGenException('Key must not exceed 63 characters');
         $this -> len = (string) $len;
+        $this -> key = $key;
         $cdb = DB::instance();
 
         try {
@@ -154,7 +156,7 @@ class IdGen {
             throw new IdGenException('Id overflow');
         if ($newseed < $min)
             throw new IdGenException('Id too small');
-        else (DB::instance() -> update(self::TABLE, ['id' => $newseed], "len = {$this -> len}"));
+        else (DB::instance() -> update(self::TABLE, ['id' => $newseed], "len = {$this -> len} AND table_key = '{$this -> key}'"));
 
         $range = bcsub($max, $min);
 

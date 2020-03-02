@@ -16,6 +16,7 @@ use Viper\Core\Model\DB\MySQL\Types\IntegerType;
 use Viper\Core\Model\DB\MySQL\Types\StringType;
 use Viper\Core\Model\DBField;
 use Viper\Core\Model\DB\DBException;
+use Viper\Core\StringCodeException;
 use Viper\Support\ValidationException;
 
 
@@ -49,7 +50,8 @@ class MysqlDBTableStructure extends SQLTable
     private function getQueryLines() {
         foreach ($this -> getColumns() as $column)
             $lines[] = $column.' '.$this -> getField($column) -> getQuery();
-        $lines[] = 'CONSTRAINT pKey_ID PRIMARY KEY (id)';
+        $table = str_replace('-', '_', $this -> getTable());
+        $lines[] = "CONSTRAINT pKey_ID_$table PRIMARY KEY (id)";
         if (isset($this -> constraints['unique']))
             $lines[] = 'CONSTRAINT u_Unique UNIQUE ('.$this -> constraints['unique'].')';
         if (isset($this -> constraints['foreign_key']))

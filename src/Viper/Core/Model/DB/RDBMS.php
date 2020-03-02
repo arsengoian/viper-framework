@@ -138,4 +138,9 @@ interface RDBMS
     public function createTable(string $name, array $columns);
 
 
+    /**
+     * @return string
+     */
+    public function identifierQuote(): string;
+
 }

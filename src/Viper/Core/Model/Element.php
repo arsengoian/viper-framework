@@ -84,7 +84,8 @@ abstract class Element extends DBObject
     }
     
     final protected static function queryColumns(): array {
-        return array_map(function($el) {return "`".$el."`";}, self::columns());
+        $quote = DB::instance()->identifierQuote();
+        return array_map(function($el) use ($quote) {return "$quote".$el."$quote";}, self::columns());
     }
 
     final protected static function columns() : array {
