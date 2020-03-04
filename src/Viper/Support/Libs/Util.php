@@ -50,7 +50,7 @@ class Util
         return function() use ($str, $separator) {
             $last = 0;
             for ($i = 0; $i < strlen($str); $i++) {
-                if ($str{$i} === $separator) {
+                if ($str[$i] === $separator) {
                     if ($last == 0)
                         yield substr($str, $last, $i - $last);
                     else yield substr($str, $last + 1, $i - $last - 1);
