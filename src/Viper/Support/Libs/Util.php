@@ -110,7 +110,7 @@ class Util
     private const TERMINATOR = '...';
 
     private static function terminate(string $str): string {
-        while (mb_strlen($str) > 1 && in_array($str{mb_strlen($str) - 1}, [',', ':', '-', '.', '"', "'"])) {
+        while (mb_strlen($str) > 1 && in_array($str[mb_strlen($str) - 1], [',', ':', '-', '.', '"', "'"])) {
             $str = mb_substr($str, 0, mb_strlen($str) - 1);
         }
         if (mb_strlen($str) <= 1)
