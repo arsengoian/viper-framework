@@ -63,14 +63,8 @@ class Router
         self::$customRouteClasses[$routeKey] = $routeClass;
     }
 
-
-    public function exec() {
-        self::$customRouteRegistrationOpen = FALSE;
-
-        $app = $this -> app;
-
-        $controller_name = $first = $app -> routeShift();
-        if ($first) {
+    public function checkControllerName(App $app, string $controller_name) {
+        if ($controller_name) {
             $action = $app -> routeSegment(0);
             if (!$action)
                 $action = strtolower($app -> getMethod());
@@ -106,6 +100,17 @@ class Router
             $controller_name = self::CONTROLLERS_NAMESPACE.$controller_name;
 
         }
+        return [$controller_name, $action];
+    }
+
+
+    public function exec() {
+        self::$customRouteRegistrationOpen = FALSE;
+
+        $app = $this -> app;
+
+        $controller_name = $app -> routeShift();
+        list($controller_name, $action) = $this -> checkControllerName($app, $controller_name);
 
 
         if ($action == $app -> routeSegment(0))
@@ -186,12 +191,12 @@ class Router
     
     
     public function CLIrunAction(string $controller_name, string $action, array $args) {
-        $controller_name = ucfirst(strtolower($controller_name)).'Controller';
-        $controller_name = self::CONTROLLERS_NAMESPACE.$controller_name;
+        list($controller_name, $a_) = $this -> checkControllerName($this->app, $controller_name);
 
         $controller = new $controller_name($this -> app);
 
         $content = call_user_func_array([$controller, $action], $this -> app -> routeSegments());
-        echo $content -> flush();
+        if ($content)
+            echo $content -> flush();
     }
 }

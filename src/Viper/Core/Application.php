@@ -12,7 +12,14 @@ namespace Viper\Core;
 use Viper\Core\Routing\Filters\HttpsFilter;
 use Viper\Core\Routing\Filters\ModelDestructionFilter;
 use Viper\Core\Routing\App;
+use Viper\Core\Routing\Router;
 
+/**
+ * Class Application
+ * @package Viper\Core
+ *
+ * @property  Router router
+ */
 class Application extends App
 {
 
