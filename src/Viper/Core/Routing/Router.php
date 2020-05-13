@@ -63,7 +63,7 @@ class Router
         self::$customRouteClasses[$routeKey] = $routeClass;
     }
 
-    public function checkControllerName(App $app, string $controller_name) {
+    public function checkControllerName(App $app, ?string $controller_name) {
         if ($controller_name) {
             $action = $app -> routeSegment(0);
             if (!$action)
