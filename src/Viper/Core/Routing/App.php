@@ -14,25 +14,13 @@ use Viper\Support\ValidationException;
 use Viper\Support\Libs\DataStream;
 use Viper\Support\Writer;
 
-
-// TODO Finish Viper to support foreach, while and switch
-
-// TODO add daemon routing
-
 // TODO implement data propagation for viper
 
 // TODO add async requests from ReactPHP
 
 // TODO implement sessions
 
-// TODO replace ROOT constant
-
-// TODO add support for regexp to routing
-
 // TODO custom models deployment
-
-// TODO update Viper package
-
 
 abstract class App extends Loggable{
     

@@ -22,6 +22,7 @@ use Viper\Core\Routing\Router;
  */
 class Application extends App
 {
+    public static $CLI = false;
 
     final protected function systemOnLoad (): void
     {
@@ -89,6 +90,8 @@ class Application extends App
 
     public static function cliRun(string $cName = NULL, string $action = NULL) {
         $app = new static();
+
+        self::$CLI = true;
 
         $args = self::getCliArgs($cName, $action);
         $cn = array_shift($args);
