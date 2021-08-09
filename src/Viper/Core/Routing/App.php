@@ -23,7 +23,7 @@ use Viper\Support\Writer;
 // TODO custom models deployment
 
 abstract class App extends Loggable{
-    
+
     private $params;
     private $files;
     private $headers;
@@ -77,9 +77,14 @@ abstract class App extends Loggable{
         $path = isset($_GET['path']) ? $_GET['path'] : '';
         $this -> setRoute($path);
 
-        if (function_exists('getallheaders'))
-            $this -> headers = getallheaders();
-        else $this -> headers = [];
+        if (function_exists('getallheaders')) {
+            $headers = getallheaders();
+            $this -> headers = array_combine(array_map(function($x) {
+                return strtolower($x);
+            }, array_keys($headers)), array_values($headers));
+        }
+        else
+            $this -> headers = [];
         $this -> method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 
         $this -> setupParams();
@@ -280,7 +285,7 @@ abstract class App extends Loggable{
     }
 
     public function getHeader(string $name): ?string {
-        return $this -> headers[$name] ?? NULL;
+        return $this -> headers[strtolower($name)] ?? NULL;
     }
 
     public function getEnv (string $key)
@@ -378,7 +383,7 @@ abstract class App extends Loggable{
             flush();
             if(session_id()) session_write_close();
         }
-        
+
         $this -> afterFlushTasks();
 
     }
