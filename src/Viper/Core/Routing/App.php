@@ -74,7 +74,8 @@ abstract class App extends Loggable{
     }
 
     private function setupVars() {
-        $path = isset($_GET['path']) ? $_GET['path'] : (strtok($_SERVER["REQUEST_URI"], '?') ? strtok($_SERVER["REQUEST_URI"], '?') : '');
+        $requestURI = $_SERVER["REQUEST_URI"] ?? '';
+        $path = isset($_GET['path']) ? $_GET['path'] : (strtok($requestURI, '?') ? strtok($requestURI, '?') : '');
         $this -> setRoute($path);
 
         if (function_exists('getallheaders')) {
