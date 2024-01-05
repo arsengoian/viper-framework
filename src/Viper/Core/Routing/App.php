@@ -129,9 +129,12 @@ abstract class App extends Loggable{
             $_response["file"] = $exc -> getFile();
             $_response["trace"] = $exc -> getTrace();
         }
-        if (Config::get('DEBUG') === TRUE && $prettyprint || Config::get('PRETTY_PRINT') === TRUE)
+        if (Config::get('DEBUG') === TRUE && $prettyprint || Config::get('PRETTY_PRINT') === TRUE) {
             echo '<pre>' && print_r($_response);
-        else echo json_encode($_response);
+        } else if(Config::get('DEBUG') === TRUE) {
+            echo json_encode($_response);
+        }
+
         try {
             $l = new DaemonLogger(root().'/logs/error.log');
             $l -> write("Error occured");
