@@ -42,6 +42,15 @@ class DaemonLogger implements Writer {
         $this -> write(date("H:i:s d M Y")." Session ended, ".$time."s elapsed");
         $this -> newline();
         fclose ($this -> log);
+
+        $this->checkLimits();
+    }
+
+    public function checkLimits()
+    {
+        $limit = intval(Config::get('LOG_FILE_LIMIT'));
+        $content = file_get_contents($this->file);
+        file_put_contents($this->file, mb_substr($content,  -$limit));
     }
 
     private function writ($msg) {
@@ -66,12 +75,10 @@ class DaemonLogger implements Writer {
         $this -> append(DD::nice($var));
     }
 
-
     public function getFile()
     {
         return $this->file;
     }
-
 
     public function setFile($file)
     {

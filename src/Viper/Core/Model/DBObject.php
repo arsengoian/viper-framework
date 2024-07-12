@@ -22,11 +22,12 @@ abstract class DBObject extends Collection {
     abstract protected static function queryColumns() : array;
     abstract protected static function idSpace() : int;
 
-    private static function validateDataArr(&$data, array $condition) {
+    protected static function validateDataArr(&$data, array $condition) {
         if (count($data) == 0)
             throw new ModelException('Not found: object with '.json_encode($condition).' missing');
-        if (count($data) > 1)
+        if (count($data) > 1) {
             throw new ModelException('Select condition uncertain');
+        }
     }
 
     function __construct(array $condition, array $local_data = NULL) {
@@ -180,12 +181,19 @@ abstract class DBObject extends Collection {
         DB::instance() -> insert(static::table(), $vals);
         try {
             foreach ($vals as $key => $val) { // TODO standardize this checks! This is crutchy
-                if (!$val || is_object($val))
+                if (!$val || is_object($val)) {
                     unset($vals[$key]);
-                if (is_float($val) || (is_string($val) && $val == (string)(float)$val)) // string contains a float
+                }
+                if (is_float($val) || (is_string($val) && $val == (string)(float)$val && strpos($val, '.') !== false)) {// string contains a float
                     unset($vals[$key]);
+                }
+
             }
-            return static::construct($vals);
+            try {
+                return new static($vals, $vals);
+            } catch (\Throwable $throwable) {
+                throw $throwable;
+            }
         } catch (DBException $e) {
             return NULL;
         }

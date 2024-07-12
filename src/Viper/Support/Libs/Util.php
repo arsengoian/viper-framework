@@ -159,6 +159,11 @@ class Util
         return $GLOBALS[$k];
     }
 
+    public static function clearRAM(string $key) {
+        $k = Config::get('RAM_KEY').$key;
+        $GLOBALS[$k] = null;
+    }
+
 
     public static function cache(string $key, string $dataKey, string $namespace = 'system',
                                  callable $dataHandler = NULL, callable $serialize = NULL, callable $unserialize = NULL) {

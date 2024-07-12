@@ -46,7 +46,7 @@ class DateType extends Type
         try {
             return Date::createFromFormat(self::TYPES[$this -> sqlType], $value);
         } catch (InvalidArgumentException $e) {
-            throw new ValidationException('Date invalid format');
+            throw new ValidationException('Date invalid format  ' . json_encode(debug_backtrace(), JSON_PRETTY_PRINT));
         }
     }
 
@@ -59,7 +59,11 @@ class DateType extends Type
     {
         if ($value === NULL)
             return NULL;
-        return $this -> parseDate($value);
+        try {
+            return $this->parseDate($value);
+        } catch (\Throwable $e) {
+            throw new \Exception(json_encode(debug_backtrace(), JSON_PRETTY_PRINT));
+        }
     }
 
     private function parseDate(Date $date): string {

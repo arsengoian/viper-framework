@@ -38,6 +38,15 @@ class DB
         });
     }
 
+    public static function reconnect(): RDBMS {
+        Util::clearRAM('db.'.Config::get('DB_DIALECT'));
+
+        return Util::RAM('db.'.Config::get('DB_DIALECT'), function (): RDBMS {
+            $cname = self::getDBMS();
+            return new $cname();
+        });
+    }
+
     public static function modelConfig(array $data, string $cln): ?ModelConfig {
         switch (self::getDBMS()) {
             case MysqlDB::class:

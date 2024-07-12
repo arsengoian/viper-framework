@@ -12,6 +12,7 @@ use Viper\Core\Model\DB\DB;
 use Viper\Support\Collection;
 use Viper\Support\IdGen;
 use Viper\Support\IdGenException;
+use Ramsey\Uuid\Uuid;
 
 // TODO add queries
 // TODO fix random order in all()
@@ -81,6 +82,8 @@ abstract class Model extends Element {
         if (!self::modelConfig() -> overwriteAllowed())
             throw new ModelAccessException('Cannot overwrite existing data');
         return static::attempt(function() use ($fld, $value) {
+            file_put_contents('/backend/logs/val12.log', gettype($value) . "\n", FILE_APPEND);
+            
             $value = self::modelConfig() -> validateField($fld, $value, static::class);
             return parent::set($fld, $value);
         });
@@ -134,7 +137,13 @@ abstract class Model extends Element {
     }
 
     final public static function newId(int $n): string {
-        return (new IdGen($n, static::table())) -> neu();
+        $data = openssl_random_pseudo_bytes(16);
+
+        $data[6] = chr(ord($data[6]) & 0x0f | 0x40); // set version to 0100
+        $data[8] = chr(ord($data[8]) & 0x3f | 0x80); // set bits 6-7 to 10
+
+        return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($data), 4));
+        return Uuid::uuid4()->toString();
     }
 
     final public static function populateId(Collection &$valuearr): string {
@@ -160,8 +169,8 @@ abstract class Model extends Element {
                 self::populateId($valuearr);
             foreach ($valuearr as $key => $value)
                 self::modelConfig() -> validateField($key, $value, static::class);
-            if(static::getBy('id', $valuearr['id']))
-                throw new IdGenException('Model with this ID already exists');
+//            if(static::getBy('id', $valuearr['id']))
+//                throw new IdGenException('Model with this ID already exists');
             return parent::add($valuearr);
         });
     }
