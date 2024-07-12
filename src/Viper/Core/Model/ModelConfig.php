@@ -117,6 +117,7 @@ abstract class ModelConfig extends DBTableStructure
         $fld = $this -> getField($field);
         $type = $fld -> getSQLType();
         $this -> setupTypeHandler($type, $fld);
+        
         $value = $type -> reverseConvert($value);
 
         // Check type
@@ -142,11 +143,11 @@ abstract class ModelConfig extends DBTableStructure
             $type -> setSize($fld -> getSize());
     }
 
-
-
-
-
     public function testTable(StringCodeException $e, callable $retry, int $num = 0) {
+        if (str_contains($e->getMessage(), 'MySQL server has gone away')) {
+            static::clearDB();
+            return $this->testTable($e, $retry, $num);
+        }
         try {
             switch (get_class($e)) {
                 case DBException::class:

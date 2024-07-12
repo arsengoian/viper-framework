@@ -35,43 +35,43 @@ class IdGen {
 
 
     function __construct(int $len, string $key) {
-        if ($len < 2 || $len > 32)
-            throw new IdGenException('Length out of range');
-        if (strlen($key) > 63)
-            throw new IdGenException('Key must not exceed 63 characters');
-        $this -> len = (string) $len;
-        $this -> key = $key;
-        $cdb = DB::instance();
-
-        try {
-            $dat = $cdb -> select(self::TABLE, 'id, p1, p2, k', "len = $len AND table_key = '$key'");
-        } catch(DBException $e) {
-            $cdb -> createTable(self::TABLE, self::COLUMNS);
-            $dat = [];
-        }
-        if (count($dat) < 1) {
-            $cdb -> insert(
-                self::TABLE,
-                [
-                    'len' => $len,
-                    'table_key' => $key,
-                    'id' => $minid = $this -> minId(),
-                    'p1' => $p1 = $this -> findP1(),
-                    'p2' => $p2 = $this -> findp2(),
-                    'k' => $k = $this -> findK()
-                ]
-            );
-            $this -> current = $minid;
-            $this -> p1 = $p1;
-            $this -> p2 = $p2;
-            $this -> k = $k;
-        } else {
-            $d = $dat[0];
-            $this -> current = $d['id'];
-            $this -> p1 = $d['p1'];
-            $this -> p2 = $d['p2'];
-            $this -> k = $d['k'];
-        }
+//        if ($len < 2 || $len > 32)
+//            throw new IdGenException('Length out of range');
+//        if (strlen($key) > 63)
+//            throw new IdGenException('Key must not exceed 63 characters');
+//        $this -> len = (string) $len;
+//        $this -> key = $key;
+//        $cdb = DB::instance();
+//
+//        try {
+////            $dat = $cdb -> select(self::TABLE, 'id, p1, p2, k', "len = $len AND table_key = '$key'");
+//        } catch(DBException $e) {
+//            $cdb -> createTable(self::TABLE, self::COLUMNS);
+//            $dat = [];
+//        }
+//        if (count($dat) < 1) {
+//            $cdb -> insert(
+//                self::TABLE,
+//                [
+//                    'len' => $len,
+//                    'table_key' => $key,
+//                    'id' => $minid = $this -> minId(),
+//                    'p1' => $p1 = $this -> findP1(),
+//                    'p2' => $p2 = $this -> findp2(),
+//                    'k' => $k = $this -> findK()
+//                ]
+//            );
+//            $this -> current = $minid;
+//            $this -> p1 = $p1;
+//            $this -> p2 = $p2;
+//            $this -> k = $k;
+//        } else {
+//            $d = $dat[0];
+//            $this -> current = $d['id'];
+//            $this -> p1 = $d['p1'];
+//            $this -> p2 = $d['p2'];
+//            $this -> k = $d['k'];
+//        }
     }
 
 
@@ -147,7 +147,6 @@ class IdGen {
 
 
     public function neu() {
-
         $max = $this -> maxId();
         $min = $this -> minId();
 
@@ -168,6 +167,10 @@ class IdGen {
 
     }
 
+    public static function uniqid()
+    {
+        return strtoupper(uniqid());
+    }
 
     private static function bcdechex($dec) {
         $last = bcmod($dec, 16);

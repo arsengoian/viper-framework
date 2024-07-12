@@ -20,6 +20,9 @@ abstract class SQLTable extends ModelConfig
     protected static function DB(): RDBMS {
         return DB::instance();
     }
+    protected static function clearDB(): RDBMS {
+        return DB::reconnect();
+    }
 
     public function getField(string $field): DBField {
         if (isset($this -> columns[$field]))
