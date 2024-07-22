@@ -82,8 +82,7 @@ abstract class Model extends Element {
         if (!self::modelConfig() -> overwriteAllowed())
             throw new ModelAccessException('Cannot overwrite existing data');
         return static::attempt(function() use ($fld, $value) {
-            file_put_contents('/backend/logs/val12.log', gettype($value) . "\n", FILE_APPEND);
-            
+
             $value = self::modelConfig() -> validateField($fld, $value, static::class);
             return parent::set($fld, $value);
         });
