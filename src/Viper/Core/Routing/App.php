@@ -364,7 +364,7 @@ abstract class App extends Loggable{
 
 
         } catch (\Throwable $exc) {
-
+            http_response_code(500);
             if (!$this -> flags['exceptionsDisabled']) {
                 // If not caught earlier
                 try {
