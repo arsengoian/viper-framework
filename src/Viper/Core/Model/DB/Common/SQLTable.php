@@ -27,7 +27,7 @@ abstract class SQLTable extends ModelConfig
     public function getField(string $field): DBField {
         if (isset($this -> columns[$field]))
             return $this -> columns[$field];
-        else throw new ModelConfigException('Field '.$field.' not found');
+        else throw new ModelConfigException('Field '.$field.' not found in table ' . $this->table);
     }
 
     protected function fieldExists(string $field): bool {
