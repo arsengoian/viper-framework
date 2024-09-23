@@ -9,6 +9,7 @@
 namespace Viper\Core\Model\DB\MySQL\Types;
 
 
+use DateTime;
 use Viper\Core\Model\DB\Types\Type;
 use Viper\Support\ValidationException;
 use Jenssegers\Date\Date;
@@ -65,9 +66,13 @@ class DateType extends Type
             throw new \Exception(json_encode(debug_backtrace(), JSON_PRETTY_PRINT));
         }
     }
+    
+    private function parseDate($value): string 
+    {
+        $format = self::TYPES[$this -> sqlType];
+        $date = DateTime::createFromFormat($format, $value);
 
-    private function parseDate(Date $date): string {
-        return $date -> format(self::TYPES[$this -> sqlType]);
+        return $date->format($format);
     }
 
     /**
